@@ -691,19 +691,14 @@
 			"name": "Appointment",
 			"item": [
 				{
-					"name": "localhost:8080/api/appointment/add/1/1/1",
+					"name": "localhost:8080/api/appointment/book/2",
 					"request": {
 						"auth": {
-							"type": "basic",
-							"basic": [
+							"type": "bearer",
+							"bearer": [
 								{
-									"key": "password",
-									"value": "nirmala@123",
-									"type": "string"
-								},
-								{
-									"key": "username",
-									"value": "nirmala@gmail.com",
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrYXZ5YUBnbWFpbC5jb20iLCJpYXQiOjE3NDkyODc3NjgsImV4cCI6MTc0OTMzMDk2OH0.WILXuWgJX46q2AYgkZQjAARZVi4VKm_XXjV9BjNBx8o",
 									"type": "string"
 								}
 							]
@@ -712,7 +707,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"scheduledDate\": \"2025-06-02\",\r\n  \"scheduledTime\": \"12:30:00\",\r\n  \"status\": \"SCHEDULED\",\r\n  \"natureOfVisit\": \"Check-up\",\r\n  \"description\": \"Annual general checkup\"\r\n}",
+							"raw": "{\r\n  \"natureOfVisit\": \"Consultation\",\r\n  \"description\": \"Back pain check\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -720,7 +715,7 @@
 							}
 						},
 						"url": {
-							"raw": "localhost:8080/api/appointment/add/1/1/1",
+							"raw": "localhost:8080/api/appointment/book/1",
 							"host": [
 								"localhost"
 							],
@@ -728,9 +723,7 @@
 							"path": [
 								"api",
 								"appointment",
-								"add",
-								"1",
-								"1",
+								"book",
 								"1"
 							]
 						}
@@ -738,34 +731,22 @@
 					"response": []
 				},
 				{
-					"name": "localhost:8080/api/appointment/get-one/7",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
+					"name": "localhost:8080/api/appointment/own",
 					"request": {
 						"auth": {
-							"type": "basic",
-							"basic": [
+							"type": "bearer",
+							"bearer": [
 								{
-									"key": "password",
-									"value": "albus@123",
-									"type": "string"
-								},
-								{
-									"key": "username",
-									"value": "albus@gmail.com",
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaXJtYWxhQGdtYWlsLmNvbSIsImlhdCI6MTc0OTI4NzQ1MywiZXhwIjoxNzQ5MzMwNjUzfQ.f5njPNZVsuHY2YR3mtU2v1whe23ee00zAIdP81Gr3qc",
 									"type": "string"
 								}
 							]
 						},
 						"method": "GET",
 						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"fullName\": \"Kavin Raj\", \r\n    \"dob\": \"2000-10-11\", \r\n    \"gender\": \"male\", \r\n    \"contactNumber\": \"9512354796\"\r\n    }\r\n"
-						},
 						"url": {
-							"raw": "localhost:8080/api/appointment/get-one/7",
+							"raw": "localhost:8080/api/appointment/own",
 							"host": [
 								"localhost"
 							],
@@ -773,8 +754,77 @@
 							"path": [
 								"api",
 								"appointment",
-								"get-one",
-								"7"
+								"own"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "localhost:8080/api/appointment/doctor",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJkaXZ5YUBnbWFpbC5jb20iLCJpYXQiOjE3NDkyODc3MjAsImV4cCI6MTc0OTMzMDkyMH0.UJ6awr9Le36hXpNfCv4CVNmnpeNHoXGWKbqENuXFnFY",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/api/appointment/doctor",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"appointment",
+								"doctor"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "localhost:8080/api/appointment/reschedule/1",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrYXJhbkBnbWFpbC5jb20iLCJpYXQiOjE3NDkyODc4OTcsImV4cCI6MTc0OTMzMTA5N30.D8yeSi5jZbMDZ4jMA9AlRQoaeaxDMtBE4QWZO3n-CoE",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"scheduledDate\": \"2025-06-08\",\r\n  \"scheduledTime\": \"11:00:00\",\r\n  \"status\": \"SCHEDULED\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/api/appointment/reschedule/1",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"appointment",
+								"reschedule",
+								"1"
 							]
 						}
 					},
@@ -787,16 +837,11 @@
 					},
 					"request": {
 						"auth": {
-							"type": "basic",
-							"basic": [
+							"type": "bearer",
+							"bearer": [
 								{
-									"key": "password",
-									"value": "john@123",
-									"type": "string"
-								},
-								{
-									"key": "username",
-									"value": "john@gmail.com",
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrYXJhbkBnbWFpbC5jb20iLCJpYXQiOjE3NDkyOTEwNjgsImV4cCI6MTc0OTMzNDI2OH0.ltmaU-47BB3NUVtswmdGu16mC75xwEKiG3jJI6S-D9Y",
 									"type": "string"
 								}
 							]
@@ -805,7 +850,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"fullName\": \"Kavin Raj\", \r\n    \"dob\": \"2000-10-11\", \r\n    \"gender\": \"male\", \r\n    \"contactNumber\": \"9512354796\"\r\n    }\r\n"
+							"raw": "{\r\n  \"name\":\"Gynocology\"\r\n}"
 						},
 						"url": {
 							"raw": "localhost:8080/api/appointment/get-all",
@@ -821,263 +866,6 @@
 						}
 					},
 					"response": []
-				},
-				{
-					"name": "localhost:8080/api/appointment/delete/5",
-					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{
-									"key": "password",
-									"value": "albus@123",
-									"type": "string"
-								},
-								{
-									"key": "username",
-									"value": "albus@gmail.com",
-									"type": "string"
-								}
-							]
-						},
-						"method": "DELETE",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"fullName\": \"Kavin Raj\", \r\n    \"dob\": \"2000-10-11\", \r\n    \"gender\": \"male\", \r\n    \"contactNumber\": \"9512354796\"\r\n    }\r\n"
-						},
-						"url": {
-							"raw": "localhost:8080/api/appointment/delete/5",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"api",
-								"appointment",
-								"delete",
-								"5"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "localhost:8080/api/appointment/reschedule/6",
-					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{
-									"key": "password",
-									"value": "albus@123",
-									"type": "string"
-								},
-								{
-									"key": "username",
-									"value": "albus@gmail.com",
-									"type": "string"
-								}
-							]
-						},
-						"method": "PUT",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"scheduledDate\": \"2025-05-01\",\r\n    \"scheduledTime\": \"10:00:00\",\r\n    \"status\": \"SCHEDULED\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "localhost:8080/api/appointment/reschedule/6",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"api",
-								"appointment",
-								"reschedule",
-								"6"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "localhost:8080/api/appointment/patient/1",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{
-									"key": "password",
-									"value": "albus@123",
-									"type": "string"
-								},
-								{
-									"key": "username",
-									"value": "albus@gmail.com",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"fullName\": \"Kavin Raj\", \r\n    \"dob\": \"2000-10-11\", \r\n    \"gender\": \"male\", \r\n    \"contactNumber\": \"9512354796\"\r\n    }\r\n"
-						},
-						"url": {
-							"raw": "localhost:8080/api/appointment/patient/1",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"api",
-								"appointment",
-								"patient",
-								"1"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "localhost:8080/api/appointment/doctor/1",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{
-									"key": "password",
-									"value": "albus@123",
-									"type": "string"
-								},
-								{
-									"key": "username",
-									"value": "albus@gmail.com",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"fullName\": \"Kavin Raj\", \r\n    \"dob\": \"2000-10-11\", \r\n    \"gender\": \"male\", \r\n    \"contactNumber\": \"9512354796\"\r\n    }\r\n"
-						},
-						"url": {
-							"raw": "localhost:8080/api/appointment/doctor/1",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"api",
-								"appointment",
-								"doctor",
-								"1"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "localhost:8080/api/appointment/receptionist/1",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{
-									"key": "password",
-									"value": "albus@123",
-									"type": "string"
-								},
-								{
-									"key": "username",
-									"value": "albus@gmail.com",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"fullName\": \"Kavin Raj\", \r\n    \"dob\": \"2000-10-11\", \r\n    \"gender\": \"male\", \r\n    \"contactNumber\": \"9512354796\"\r\n    }\r\n"
-						},
-						"url": {
-							"raw": "localhost:8080/api/appointment/receptionist/1",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"api",
-								"appointment",
-								"receptionist",
-								"1"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "localhost:8080/api/appointment/status/SCHEDULED",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{
-									"key": "password",
-									"value": "albus@123",
-									"type": "string"
-								},
-								{
-									"key": "username",
-									"value": "albus@gmail.com",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"fullName\": \"Kavin Raj\", \r\n    \"dob\": \"2000-10-11\", \r\n    \"gender\": \"male\", \r\n    \"contactNumber\": \"9512354796\"\r\n    }\r\n"
-						},
-						"url": {
-							"raw": "localhost:8080/api/appointment/status/SCHEDULED",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"api",
-								"appointment",
-								"status",
-								"SCHEDULED"
-							]
-						}
-					},
-					"response": []
 				}
 			]
 		},
@@ -1088,16 +876,11 @@
 					"name": "localhost:8080/api/consultation/add/1",
 					"request": {
 						"auth": {
-							"type": "basic",
-							"basic": [
+							"type": "bearer",
+							"bearer": [
 								{
-									"key": "password",
-									"value": "john@123",
-									"type": "string"
-								},
-								{
-									"key": "username",
-									"value": "john@gmail.com",
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrdW1hckBnbWFpbC5jb20iLCJpYXQiOjE3NDkzMDA5MDksImV4cCI6MTc0OTM0NDEwOX0.rGWxGny2BC8pEq-KgtxrVUiK5Q_I2iAUBCPuxvsoy4Y",
 									"type": "string"
 								}
 							]
@@ -1106,7 +889,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"symptoms\": \"Mild fever and cold\",\r\n  \"examination\": \"No swelling, normal vitals\",\r\n  \"treatmentPlan\": \"Paracetemol for 3 days\"\r\n}",
+							"raw": "{\r\n  \"symptoms\": \"Headache and dizziness\",\r\n  \"examination\": \"BP check - normal, eyes - okay\",\r\n  \"treatmentPlan\": \"Prescribe Paracetamol and rest\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1114,7 +897,7 @@
 							}
 						},
 						"url": {
-							"raw": "localhost:8080/api/consultation/add/1",
+							"raw": "localhost:8080/api/consultation/add/2",
 							"host": [
 								"localhost"
 							],
@@ -1123,91 +906,6 @@
 								"api",
 								"consultation",
 								"add",
-								"1"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "localhost:8080/api/consultation/get-all",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{
-									"key": "password",
-									"value": "john@123",
-									"type": "string"
-								},
-								{
-									"key": "username",
-									"value": "john@gmail.com",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"fullName\": \"Kavin Raj\", \r\n    \"dob\": \"2000-10-11\", \r\n    \"gender\": \"male\", \r\n    \"contactNumber\": \"9512354796\"\r\n    }\r\n"
-						},
-						"url": {
-							"raw": "localhost:8080/api/consultation/get-all",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"api",
-								"consultation",
-								"get-all"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "localhost:8080/api/consultation/get-one/2",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{
-									"key": "password",
-									"value": "john@123",
-									"type": "string"
-								},
-								{
-									"key": "username",
-									"value": "john@gmail.com",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"fullName\": \"Kavin Raj\", \r\n    \"dob\": \"2000-10-11\", \r\n    \"gender\": \"male\", \r\n    \"contactNumber\": \"9512354796\"\r\n    }\r\n"
-						},
-						"url": {
-							"raw": "localhost:8080/api/consultation/get-one/2",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"api",
-								"consultation",
-								"get-one",
 								"2"
 							]
 						}
@@ -1215,22 +913,17 @@
 					"response": []
 				},
 				{
-					"name": "localhost:8080/api/consultation/patient/2",
+					"name": "localhost:8080/api/consultation/doctor/get/1",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
 					"request": {
 						"auth": {
-							"type": "basic",
-							"basic": [
+							"type": "bearer",
+							"bearer": [
 								{
-									"key": "password",
-									"value": "john@123",
-									"type": "string"
-								},
-								{
-									"key": "username",
-									"value": "john@gmail.com",
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJkaXZ5YUBnbWFpbC5jb20iLCJpYXQiOjE3NDkzMDAwMTMsImV4cCI6MTc0OTM0MzIxM30.2u6RSod-37hfN_dJ9TTF58XCVOlSJrtn3ot_4EZeo8M",
 									"type": "string"
 								}
 							]
@@ -1239,53 +932,10 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"fullName\": \"Kavin Raj\", \r\n    \"dob\": \"2000-10-11\", \r\n    \"gender\": \"male\", \r\n    \"contactNumber\": \"9512354796\"\r\n    }\r\n"
+							"raw": "{\r\n  \"name\":\"Gynocology\"\r\n}"
 						},
 						"url": {
-							"raw": "localhost:8080/api/consultation/patient/2",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"api",
-								"consultation",
-								"patient",
-								"2"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "localhost:8080/api/consultation/doctor/2",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{
-									"key": "password",
-									"value": "john@123",
-									"type": "string"
-								},
-								{
-									"key": "username",
-									"value": "john@gmail.com",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"fullName\": \"Kavin Raj\", \r\n    \"dob\": \"2000-10-11\", \r\n    \"gender\": \"male\", \r\n    \"contactNumber\": \"9512354796\"\r\n    }\r\n"
-						},
-						"url": {
-							"raw": "localhost:8080/api/consultation/doctor/2",
+							"raw": "localhost:8080/api/consultation/doctor/get/1",
 							"host": [
 								"localhost"
 							],
@@ -1294,6 +944,86 @@
 								"api",
 								"consultation",
 								"doctor",
+								"get",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "localhost:8080/api/consultation/patient/get/1",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaXJtYWxhQGdtYWlsLmNvbSIsImlhdCI6MTc0OTMwMDc4NSwiZXhwIjoxNzQ5MzQzOTg1fQ.Oq1tAdplQWALSVkWWMjepegkjiRcJwSjeB9aYgT7UG4",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\":\"Gynocology\"\r\n}"
+						},
+						"url": {
+							"raw": "localhost:8080/api/consultation/patient/get/1",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"consultation",
+								"patient",
+								"get",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "localhost:8080/api/consultation/update/2",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrdW1hckBnbWFpbC5jb20iLCJpYXQiOjE3NDkzMDA5MDksImV4cCI6MTc0OTM0NDEwOX0.rGWxGny2BC8pEq-KgtxrVUiK5Q_I2iAUBCPuxvsoy4Y",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"symptoms\": \"Updated symptoms\",\r\n  \"treatmentPlan\": \"Revised treatment plan\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/api/consultation/update/2",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"consultation",
+								"update",
 								"2"
 							]
 						}
@@ -1309,16 +1039,11 @@
 					"name": "localhost:8080/api/prescription/add/1",
 					"request": {
 						"auth": {
-							"type": "basic",
-							"basic": [
+							"type": "bearer",
+							"bearer": [
 								{
-									"key": "password",
-									"value": "john@123",
-									"type": "string"
-								},
-								{
-									"key": "username",
-									"value": "john@gmail.com",
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrdW1hckBnbWFpbC5jb20iLCJpYXQiOjE3NDkzMDA5MDksImV4cCI6MTc0OTM0NDEwOX0.rGWxGny2BC8pEq-KgtxrVUiK5Q_I2iAUBCPuxvsoy4Y",
 									"type": "string"
 								}
 							]
@@ -1327,7 +1052,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"medicineName\": \"Paracetamol 500mg\",\r\n  \"dosageTiming\": \"1-0-1\",\r\n  \"mealTime\": \"AF\"\r\n}",
+							"raw": "{\r\n  \"medicineName\": \"Paracetamol\",\r\n  \"dosageTiming\": \"1-0-1\",\r\n  \"duration\": \"5 days\",\r\n  \"mealTime\":\"AF\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1351,22 +1076,17 @@
 					"response": []
 				},
 				{
-					"name": "localhost:8080/api/prescription/get-all",
+					"name": "localhost:8080/api/prescription/get/1",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
 					"request": {
 						"auth": {
-							"type": "basic",
-							"basic": [
+							"type": "bearer",
+							"bearer": [
 								{
-									"key": "password",
-									"value": "john@123",
-									"type": "string"
-								},
-								{
-									"key": "username",
-									"value": "john@gmail.com",
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrdW1hckBnbWFpbC5jb20iLCJpYXQiOjE3NDkzMDA5MDksImV4cCI6MTc0OTM0NDEwOX0.rGWxGny2BC8pEq-KgtxrVUiK5Q_I2iAUBCPuxvsoy4Y",
 									"type": "string"
 								}
 							]
@@ -1375,10 +1095,10 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"fullName\": \"Kavin Raj\", \r\n    \"dob\": \"2000-10-11\", \r\n    \"gender\": \"male\", \r\n    \"contactNumber\": \"9512354796\"\r\n    }\r\n"
+							"raw": "{\r\n  \"medicineName\": \"Paracetamol\",\r\n  \"dosageTiming\": \"1-0-1\",\r\n  \"duration\": \"5 days\",\r\n  \"mealTime\":\"AF\"\r\n}"
 						},
 						"url": {
-							"raw": "localhost:8080/api/prescription/get-all",
+							"raw": "localhost:8080/api/prescription/get/1",
 							"host": [
 								"localhost"
 							],
@@ -1386,49 +1106,7 @@
 							"path": [
 								"api",
 								"prescription",
-								"get-all"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "localhost:8080/api/prescription/get-one/1",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{
-									"key": "password",
-									"value": "john@123",
-									"type": "string"
-								},
-								{
-									"key": "username",
-									"value": "john@gmail.com",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"fullName\": \"Kavin Raj\", \r\n    \"dob\": \"2000-10-11\", \r\n    \"gender\": \"male\", \r\n    \"contactNumber\": \"9512354796\"\r\n    }\r\n"
-						},
-						"url": {
-							"raw": "localhost:8080/api/prescription/get-one/1",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"api",
-								"prescription",
-								"get-one",
+								"get",
 								"1"
 							]
 						}
@@ -1436,34 +1114,31 @@
 					"response": []
 				},
 				{
-					"name": "localhost:8080/api/prescription/consultation/1",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
+					"name": "localhost:8080/api/prescription/update/2",
 					"request": {
 						"auth": {
-							"type": "basic",
-							"basic": [
+							"type": "bearer",
+							"bearer": [
 								{
-									"key": "password",
-									"value": "john@123",
-									"type": "string"
-								},
-								{
-									"key": "username",
-									"value": "john@gmail.com",
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrdW1hckBnbWFpbC5jb20iLCJpYXQiOjE3NDkzMDA5MDksImV4cCI6MTc0OTM0NDEwOX0.rGWxGny2BC8pEq-KgtxrVUiK5Q_I2iAUBCPuxvsoy4Y",
 									"type": "string"
 								}
 							]
 						},
-						"method": "GET",
+						"method": "PUT",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"fullName\": \"Kavin Raj\", \r\n    \"dob\": \"2000-10-11\", \r\n    \"gender\": \"male\", \r\n    \"contactNumber\": \"9512354796\"\r\n    }\r\n"
+							"raw": "{\r\n  \"Duration\":\"5 days\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
 						},
 						"url": {
-							"raw": "localhost:8080/api/prescription/consultation/1",
+							"raw": "localhost:8080/api/prescription/update/2",
 							"host": [
 								"localhost"
 							],
@@ -1471,8 +1146,8 @@
 							"path": [
 								"api",
 								"prescription",
-								"consultation",
-								"1"
+								"update",
+								"2"
 							]
 						}
 					},
@@ -1744,16 +1419,11 @@
 					"name": "localhost:8080/api/labstaff/add/1/3",
 					"request": {
 						"auth": {
-							"type": "basic",
-							"basic": [
+							"type": "bearer",
+							"bearer": [
 								{
-									"key": "password",
-									"value": "nirmala@123",
-									"type": "string"
-								},
-								{
-									"key": "username",
-									"value": "nirmala@gmail.com",
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrYXJhbkBnbWFpbC5jb20iLCJpYXQiOjE3NDg5NzExNTYsImV4cCI6MTc0OTAxNDM1Nn0.Hn3ucH4tdxPM3gTLts4g2gZRdhBbx79pPPjkVwAPAfs",
 									"type": "string"
 								}
 							]
@@ -1762,7 +1432,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"name\": \"Vijay\",\r\n  \"email\": \"vijay.lab@hospital.com\",\r\n  \"user\": {\r\n    \"username\":\"vijay@gmail.com\",\r\n    \"password\":\"vijay@123\"\r\n  }\r\n}",
+							"raw": "{\r\n  \"name\": \"Ajay\",\r\n  \"email\": \"ajay.lab@hospital.com\",\r\n  \"user\": {\r\n    \"username\":\"ajay@gmail.com\",\r\n    \"password\":\"ajay@123\"\r\n  }\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1770,7 +1440,7 @@
 							}
 						},
 						"url": {
-							"raw": "localhost:8080/api/labstaff/add/1/1",
+							"raw": "localhost:8080/api/labstaff/add/1",
 							"host": [
 								"localhost"
 							],
@@ -1779,7 +1449,6 @@
 								"api",
 								"labstaff",
 								"add",
-								"1",
 								"1"
 							]
 						}
@@ -1793,16 +1462,11 @@
 					},
 					"request": {
 						"auth": {
-							"type": "basic",
-							"basic": [
+							"type": "bearer",
+							"bearer": [
 								{
-									"key": "password",
-									"value": "john@123",
-									"type": "string"
-								},
-								{
-									"key": "username",
-									"value": "john@gmail.com",
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrYXJhbkBnbWFpbC5jb20iLCJpYXQiOjE3NDg5NzExNTYsImV4cCI6MTc0OTAxNDM1Nn0.Hn3ucH4tdxPM3gTLts4g2gZRdhBbx79pPPjkVwAPAfs",
 									"type": "string"
 								}
 							]
@@ -1835,16 +1499,11 @@
 					},
 					"request": {
 						"auth": {
-							"type": "basic",
-							"basic": [
+							"type": "bearer",
+							"bearer": [
 								{
-									"key": "password",
-									"value": "john@123",
-									"type": "string"
-								},
-								{
-									"key": "username",
-									"value": "john@gmail.com",
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhamF5QGdtYWlsLmNvbSIsImlhdCI6MTc0ODk3MTM0NSwiZXhwIjoxNzQ5MDE0NTQ1fQ.nBQ4DjbX_n6sgP6cGCN72JwxyZN0ZFP49rjYAz0YOrQ",
 									"type": "string"
 								}
 							]
@@ -1856,7 +1515,7 @@
 							"raw": "{\r\n  \"name\":\"Gynocology\"\r\n}"
 						},
 						"url": {
-							"raw": "localhost:8080/api/labstaff/get-one/1",
+							"raw": "localhost:8080/api/labstaff/get-one",
 							"host": [
 								"localhost"
 							],
@@ -1864,8 +1523,7 @@
 							"path": [
 								"api",
 								"labstaff",
-								"get-one",
-								"1"
+								"get-one"
 							]
 						}
 					},
@@ -1880,16 +1538,11 @@
 					"name": "localhost:8080/api/test/add/1",
 					"request": {
 						"auth": {
-							"type": "basic",
-							"basic": [
+							"type": "bearer",
+							"bearer": [
 								{
-									"key": "password",
-									"value": "john@123",
-									"type": "string"
-								},
-								{
-									"key": "username",
-									"value": "john@gmail.com",
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrdW1hckBnbWFpbC5jb20iLCJpYXQiOjE3NDkzMDA5MDksImV4cCI6MTc0OTM0NDEwOX0.rGWxGny2BC8pEq-KgtxrVUiK5Q_I2iAUBCPuxvsoy4Y",
 									"type": "string"
 								}
 							]
@@ -1898,7 +1551,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"testName\": \"MRI Scan\"\r\n}",
+							"raw": "{\r\n  \"testName\": \"X-Ray\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1906,7 +1559,7 @@
 							}
 						},
 						"url": {
-							"raw": "localhost:8080/api/test/add/1",
+							"raw": "localhost:8080/api/test/recommend/2",
 							"host": [
 								"localhost"
 							],
@@ -1914,84 +1567,8 @@
 							"path": [
 								"api",
 								"test",
-								"add",
-								"1"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "localhost:8080/api/test/assign/1/1",
-					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{
-									"key": "password",
-									"value": "john@123",
-									"type": "string"
-								},
-								{
-									"key": "username",
-									"value": "john@gmail.com",
-									"type": "string"
-								}
-							]
-						},
-						"method": "PUT",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n  \"symptoms\": \"Mild fever and cold\",\r\n  \"examination\": \"No swelling, normal vitals\",\r\n  \"treatmentPlan\": \"Paracetemol for 3 days\"\r\n}"
-						},
-						"url": {
-							"raw": "localhost:8080/api/test/assign/1/1",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"api",
-								"test",
-								"assign",
-								"1",
-								"1"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "localhost:8080/api/test/get-all",
-					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{
-									"key": "password",
-									"value": "john@123",
-									"type": "string"
-								},
-								{
-									"key": "username",
-									"value": "john@gmail.com",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "localhost:8080/api/test/get-all",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"api",
-								"test",
-								"get-all"
+								"recommend",
+								"2"
 							]
 						}
 					},
@@ -2001,16 +1578,11 @@
 					"name": "localhost:8080/api/test/consultation/1",
 					"request": {
 						"auth": {
-							"type": "basic",
-							"basic": [
+							"type": "bearer",
+							"bearer": [
 								{
-									"key": "password",
-									"value": "john@123",
-									"type": "string"
-								},
-								{
-									"key": "username",
-									"value": "john@gmail.com",
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrdW1hckBnbWFpbC5jb20iLCJpYXQiOjE3NDkzMDA5MDksImV4cCI6MTc0OTM0NDEwOX0.rGWxGny2BC8pEq-KgtxrVUiK5Q_I2iAUBCPuxvsoy4Y",
 									"type": "string"
 								}
 							]
@@ -2034,27 +1606,31 @@
 					"response": []
 				},
 				{
-					"name": "localhost:8080/api/test/labstaff/1",
+					"name": "localhost:8080/api/test/update/1",
 					"request": {
 						"auth": {
-							"type": "basic",
-							"basic": [
+							"type": "bearer",
+							"bearer": [
 								{
-									"key": "password",
-									"value": "john@123",
-									"type": "string"
-								},
-								{
-									"key": "username",
-									"value": "john@gmail.com",
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhamF5QGdtYWlsLmNvbSIsImlhdCI6MTc0OTMwNjQ2NywiZXhwIjoxNzQ5MzQ5NjY3fQ.6kQNpNXxwgm68VK3oKgYx8giqCmtlb4X8MX3-RlU3jM",
 									"type": "string"
 								}
 							]
 						},
-						"method": "GET",
+						"method": "PUT",
 						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"status\": \"COMPLETED\",\r\n  \"reportDownload\": \"http://localhost:8080/reports/xray_result_4.pdf\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": {
-							"raw": "localhost:8080/api/test/labstaff/1",
+							"raw": "localhost:8080/api/test/update/1",
 							"host": [
 								"localhost"
 							],
@@ -2062,8 +1638,112 @@
 							"path": [
 								"api",
 								"test",
-								"labstaff",
+								"update",
 								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "DoctorSlot",
+			"item": [
+				{
+					"name": "localhost:8080/api/doctor-slot/add",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJkaXZ5YUBnbWFpbC5jb20iLCJpYXQiOjE3NDkyODExNjgsImV4cCI6MTc0OTMyNDM2OH0.T5LeugZCflDiCltO_B9qRPpmkzxvfd3zrq7YLxbvD7Q",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"date\": \"2025-06-06\",\r\n  \"time\": \"10:00:00\",\r\n  \"maxAppointment\": 10\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/api/doctor-slot/add",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"doctor-slot",
+								"add"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "localhost:8080/api/doctor-slot/my-slot",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJkaXZ5YUBnbWFpbC5jb20iLCJpYXQiOjE3NDkyODExNjgsImV4cCI6MTc0OTMyNDM2OH0.T5LeugZCflDiCltO_B9qRPpmkzxvfd3zrq7YLxbvD7Q",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/api/doctor-slot/my-slot",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"doctor-slot",
+								"my-slot"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "localhost:8080/api/doctor-slot/all",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrYXJhbkBnbWFpbC5jb20iLCJpYXQiOjE3NDkyODEzMzQsImV4cCI6MTc0OTMyNDUzNH0.YORhyymDYMQCjbh6W097IdQJsAUmHQiHZmyw48wlJk8",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/api/doctor-slot/all",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"doctor-slot",
+								"all"
 							]
 						}
 					},
@@ -2111,12 +1791,12 @@
 					"basic": [
 						{
 							"key": "password",
-							"value": "karan@123",
+							"value": "ajay@123",
 							"type": "string"
 						},
 						{
 							"key": "username",
-							"value": "karan@gmail.com",
+							"value": "ajay@gmail.com",
 							"type": "string"
 						}
 					]
