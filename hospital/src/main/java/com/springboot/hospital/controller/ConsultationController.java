@@ -1,12 +1,14 @@
 package com.springboot.hospital.controller;
 
+import java.security.Principal;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,40 +19,41 @@ import com.springboot.hospital.service.ConsultationService;
 @RestController
 @RequestMapping("/api/consultation")
 public class ConsultationController {
-	
+
 	@Autowired
 	private ConsultationService consultationService;
 
+	// doctor add consultation for appointment
 	@PostMapping("/add/{appointmentId}")
-	public ResponseEntity<?> add(@PathVariable int appointmentId,@RequestBody Consultation consultation){
-		return ResponseEntity.status(HttpStatus.CREATED).body(consultationService.addConsultation(appointmentId, consultation));
+	public ResponseEntity<?> add(@PathVariable int appointmentId, @RequestBody Consultation consultation) {
+		return ResponseEntity.status(HttpStatus.CREATED)
+				.body(consultationService.addConsultation(appointmentId, consultation));
 	}
-	
+
 	@GetMapping("/get-all")
-	public ResponseEntity<?> getAll(){
+	public ResponseEntity<?> getAll() {
 		return ResponseEntity.status(HttpStatus.OK).body(consultationService.getAll());
 	}
-	
-	@GetMapping("/get-one/{id}")
-	public ResponseEntity<?> getOne(@PathVariable int id){
-		return ResponseEntity.status(HttpStatus.OK).body(consultationService.getById(id));
+
+	// get consultation by appointment ID for doctor
+	@GetMapping("/doctor/get/{appointmentId}")
+	public ResponseEntity<?> getConsultationForDoctor(@PathVariable int appointmentId,
+	                                                  Principal principal) {
+	    String username = principal.getName();
+	    return ResponseEntity.ok(consultationService.getForDoctorByAppointmentId(appointmentId, username));
 	}
-	
-	//get consultation by patientId
-	@GetMapping("/patient/{patientId}")
-	public ResponseEntity<?> getByPatient(@PathVariable int patientId){
-		return ResponseEntity.status(HttpStatus.OK).body(consultationService.getByPatient(patientId));
+
+	// update consultatio by ID
+	@PutMapping("/update/{appointmentId}")
+	public ResponseEntity<?> updateConsulattion(@PathVariable int appointmentId, @RequestBody Consultation updated) {
+		return ResponseEntity.status(HttpStatus.OK).body(consultationService.updateConsultation(appointmentId, updated));
 	}
-	
-	//get consultation by doctorId
-	@GetMapping("/doctor/{doctorId}")
-	public ResponseEntity<?> getByDoctor(@PathVariable int doctorId){
-		return ResponseEntity.status(HttpStatus.OK).body(consultationService.getByDoctor(doctorId));
+
+	//get consulation for patient
+	@GetMapping("/patient/get/{appointmentId}")
+	public ResponseEntity<?> getConsultationForPatient(@PathVariable int appointmentId, Principal principal) {
+		String username = principal.getName();
+		return ResponseEntity.ok(consultationService.getForPatientByAppointmentId(appointmentId, username));
 	}
-	
-	@DeleteMapping("/delete/{id}")
-	public ResponseEntity<?> delete(@PathVariable int id){
-		consultationService.delete(id);
-		return ResponseEntity.ok("Consultation deleted");
-	}
+
 }

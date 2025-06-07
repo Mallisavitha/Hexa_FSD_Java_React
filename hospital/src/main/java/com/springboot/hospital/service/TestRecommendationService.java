@@ -14,7 +14,7 @@ import com.springboot.hospital.repository.TestRecommendationRepository;
 
 @Service
 public class TestRecommendationService {
-	
+
 	private TestRecommendationRepository testRepository;
 	private ConsultationRepository consultationRepository;
 	private LabStaffRepository labStaffRepository;
@@ -26,51 +26,33 @@ public class TestRecommendationService {
 		this.labStaffRepository = labStaffRepository;
 	}
 
-	public TestRecommendation addTest(int consultationId, TestRecommendation test) {
-		Consultation consultation=consultationRepository.findById(consultationId).orElseThrow(() -> new ResourceNotFoundException("Invalid consultation ID"));
+	public TestRecommendation recommendTest(int consultationId, TestRecommendation test) {
+		Consultation consultation = consultationRepository.findById(consultationId)
+				.orElseThrow(() -> new ResourceNotFoundException("Consultation not found"));
+
 		test.setConsultation(consultation);
 		test.setStatus(TestRecommendation.TestStatus.PENDING);
-		
 		return testRepository.save(test);
 	}
 
-	public TestRecommendation getById(int id) {
-        return testRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Test not found"));
-    }
-	
-	public TestRecommendation assignLabStaff(int testId, int labStaffId) {
-		TestRecommendation test = getById(testId);
-        LabStaff labStaff = labStaffRepository.findById(labStaffId).orElseThrow(() -> new ResourceNotFoundException("Invalid lab staff ID"));
-
-        test.setLabStaff(labStaff);
-        test.setStatus(TestRecommendation.TestStatus.IN_PROGRESS);
-        return testRepository.save(test);
+	public List<TestRecommendation> getbyConsultation(int consultationId) {
+		return testRepository.findByConsultationConsultationId(consultationId);
 	}
 
-	public TestRecommendation markCompleted(int testId, String reportDownload) {
-		TestRecommendation test = getById(testId);
-        test.setStatus(TestRecommendation.TestStatus.COMPLETED);
-        test.setReportDownload(reportDownload);
-        return testRepository.save(test);
-	}
+	public TestRecommendation updateTest(int testId, TestRecommendation updated, String username) {
+		TestRecommendation test = testRepository.findById(testId).orElseThrow(() -> new ResourceNotFoundException("Test not found"));
 
-	public List<TestRecommendation> getAll() {
-		return testRepository.findAll();
-	}
+		LabStaff labStaff = labStaffRepository.findByUserUsername(username).orElseThrow(() -> new ResourceNotFoundException("LabStaff not found for this user"));
 
-	public List<TestRecommendation> getByConsultation(int consultationId) {
-		return testRepository.getByConsultation(consultationId);
-	}
+		if (updated.getStatus() != null)
+			test.setStatus(updated.getStatus());
 
-	public List<TestRecommendation> getByLabStaff(int labStaffId) {
-		return testRepository.getByLabStaff(labStaffId);
-	}
+		if (updated.getReportDownload() != null)
+			test.setReportDownload(updated.getReportDownload());
 
-	public void delete(int id) {
-		getById(id);
-		testRepository.deleteById(id);
+		test.setLabStaff(labStaff);
+
+		return testRepository.save(test);
 	}
-	
 
 }

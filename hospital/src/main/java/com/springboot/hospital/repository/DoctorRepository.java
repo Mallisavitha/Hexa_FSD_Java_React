@@ -1,6 +1,7 @@
 package com.springboot.hospital.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -17,6 +18,9 @@ public interface DoctorRepository extends JpaRepository<Doctor, Integer>{
 
 	@Query("select d from Doctor d where d.fullName =?1")
 	List<Doctor> searchByName(String name);
+
+	Optional<Doctor> findByUserUsername(String username);
+
 	
 
 }

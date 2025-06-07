@@ -25,29 +25,60 @@ public class SecurityConfig {
 						.requestMatchers("/api/user/signup").permitAll()
 						.requestMatchers("/api/user/token").authenticated()
 						
+						//TestRecommendation
+						.requestMatchers("/api/test/recommend/{consultationId}").hasAuthority("DOCTOR")
+						.requestMatchers("/api/test/consultation/{consultationId}").hasAnyAuthority("DOCTOR","PATIENT")
+						.requestMatchers("/api/test/update/{testId}").hasAuthority("LABSTAFF")
+						
+						//Pescription
+						.requestMatchers("/api/prescription/add/{consultationId}").hasAuthority("DOCTOR")
+						.requestMatchers("/api/prescription/get/{consultationId}").hasAnyAuthority("PATIENT","DOCTOR")
+						.requestMatchers("/api/prescription/update/{consultationId}").hasAuthority("DOCTOR")
+						.requestMatchers("/api/prescription/delete/{prescriptionId}").hasAuthority("DOCTOR")
+						
+						//Consutatiom
+						.requestMatchers("/api/consultation/add/{appointmentId}").hasAuthority("DOCTOR")
+						.requestMatchers("/api/consultation/doctor/get/{appointmentId}").hasAuthority("DOCTOR")
+						.requestMatchers("/api/consultation/update/{appointmentId}").hasAuthority("DOCTOR")
+						.requestMatchers("/api/consultation/patient/get/{appointmentId}").hasAuthority("PATIENT")
+						
+						//Appointment
+						.requestMatchers("/api/appointment/book/{slotId}").hasAuthority("PATIENT")
+						.requestMatchers("/api/appointment/own").hasAuthority("PATIENT")
+						.requestMatchers("/api/appointment/doctor").hasAuthority("DOCTOR")
+						.requestMatchers("/api/appointment/reschedule/{id}").hasAnyAuthority("DOCTOR","RECEPTIONIST")
+						.requestMatchers("/api/appointment/get-all").hasAuthority("RECEPTIONIST")
+						
+						//Doctor-slot
+						.requestMatchers("/api/doctor-slot/add").hasAuthority("DOCTOR")
+						.requestMatchers("/api/doctor-slot/my-slot").hasAuthority("DOCTOR")
+						.requestMatchers("/api/doctor-slot/all").hasAuthority("RECEPTIONIST")
+						
 						//Receptionist
 						.requestMatchers("/api/receptionist/add").permitAll()
 						.requestMatchers("/api/receptionist/get-one").hasAuthority("RECEPTIONIST")
-						.requestMatchers("api/receptionist/get-all").hasAuthority("RECEPTIONIST")
-						.requestMatchers("api/receptionist/update").hasAuthority("RECEPTIONIST")
+						.requestMatchers("/api/receptionist/get-all").hasAuthority("RECEPTIONIST")
+						.requestMatchers("/api/receptionist/update").hasAuthority("RECEPTIONIST")
 						
 						//Doctor
 						.requestMatchers("/api/doctor/add/{deptId}").hasAuthority("RECEPTIONIST")
 						.requestMatchers("/api/doctor/get-one").hasAuthority("DOCTOR")
 						.requestMatchers("/api/doctor/get-all").hasAuthority("RECEPTIONIST")
-						.requestMatchers("api/doctor/update").hasAuthority("DOCTOR")
+						.requestMatchers("/api/doctor/update").hasAuthority("DOCTOR")
 						.requestMatchers("/api/doctor/search-name/{name}").hasAnyAuthority("PATIENT","RECEPTIONIST")
 						.requestMatchers("/api/doctor/specialization/{specialization}").hasAnyAuthority("PATIENT","RECEPTIONIST")
 						
 						//Lab-Staff
-						.requestMatchers("/api/labstaff/add/{departmentId}/{receptionistId}").permitAll()
+						.requestMatchers("/api/labstaff/add/{departmentId}").hasAuthority("RECEPTIONIST")
 						.requestMatchers("/api/labstaff/get-one").hasAuthority("LABSTAFF")
+						.requestMatchers("/api/labstaff/update").hasAuthority("LABSTAFF")
+						.requestMatchers("/api/labstaff/get-all").hasAuthority("RECEPTIONIST")
 
 						//Patient
 						.requestMatchers("/api/patient/add").permitAll()
 						.requestMatchers("/api/patient/get-one").hasAuthority("PATIENT")
 						.requestMatchers("/api/patient/update").hasAuthority("PATIENT")
-						.requestMatchers("api/patient/get-all").permitAll()
+						.requestMatchers("/api/patient/get-all").permitAll()
 						
 						.anyRequest().authenticated())
 				.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)

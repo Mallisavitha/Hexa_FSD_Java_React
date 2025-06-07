@@ -38,7 +38,7 @@ public class Appointment {
 	private Status status;
 	
 	public enum Status{
-		SCHEDULED,COMPLETED,CANCELLED
+		SCHEDULED,COMPLETED,RESCHEDULED
 	}
 	
 	@ManyToOne
@@ -49,6 +49,9 @@ public class Appointment {
 
 	@ManyToOne
 	private Patient patient;
+	
+	@ManyToOne
+	private DoctorSlot doctorSlot;
 	
 	public Patient getPatient() {
 		return patient;
@@ -120,6 +123,14 @@ public class Appointment {
 
 	public void setReceptionist(Receptionist receptionist) {
 		this.receptionist = receptionist;
+	}
+
+	public DoctorSlot getDoctorSlot() {
+		return doctorSlot;
+	}
+
+	public void setDoctorSlot(DoctorSlot doctorSlot) {
+		this.doctorSlot = doctorSlot;
 	}
 	
 	

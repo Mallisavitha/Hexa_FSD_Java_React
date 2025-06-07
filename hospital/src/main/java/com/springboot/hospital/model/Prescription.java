@@ -24,6 +24,9 @@ public class Prescription {
 	@Column(name="dosage_timing")
 	private String dosageTiming;
 	
+	@Column(name="duration")
+	private String duration;
+	
 	@Column(name="meal_time")
 	@Enumerated(EnumType.STRING)
 	private MealTime mealTime;
@@ -57,6 +60,15 @@ public class Prescription {
 
 	public void setDosageTiming(String dosageTiming) {
 		this.dosageTiming = dosageTiming;
+	}
+
+	
+	public String getDuration() {
+		return duration;
+	}
+
+	public void setDuration(String duration) {
+		this.duration = duration;
 	}
 
 	public MealTime getMealTime() {

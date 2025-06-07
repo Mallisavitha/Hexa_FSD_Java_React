@@ -1,21 +1,18 @@
 package com.springboot.hospital.service;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
 import com.springboot.hospital.exception.ResourceNotFoundException;
 import com.springboot.hospital.model.Appointment;
-import com.springboot.hospital.model.Doctor;
+import com.springboot.hospital.model.DoctorSlot;
 import com.springboot.hospital.model.Patient;
-import com.springboot.hospital.model.Receptionist;
 import com.springboot.hospital.repository.AppointmentRepository;
 import com.springboot.hospital.repository.DoctorRepository;
+import com.springboot.hospital.repository.DoctorSlotRepository;
 import com.springboot.hospital.repository.PatientRepository;
 import com.springboot.hospital.repository.ReceptionistRepository;
-
 
 @Service
 public class AppointmentService {
@@ -24,66 +21,66 @@ public class AppointmentService {
 	private PatientRepository patientRepository;
 	private DoctorRepository doctorRepository;
 	private ReceptionistRepository receptionistRepository;
+	private DoctorSlotRepository doctorSlotRepository;
 
 	public AppointmentService(AppointmentRepository appointmentRepository, PatientRepository patientRepository,
-			DoctorRepository doctorRepository, ReceptionistRepository receptionistRepository) {
+			DoctorRepository doctorRepository, ReceptionistRepository receptionistRepository,
+			DoctorSlotRepository doctorSlotRepository) {
+		super();
 		this.appointmentRepository = appointmentRepository;
 		this.patientRepository = patientRepository;
 		this.doctorRepository = doctorRepository;
 		this.receptionistRepository = receptionistRepository;
+		this.doctorSlotRepository = doctorSlotRepository;
 	}
 
-	public Appointment insertAppointment(int patientId, int doctorId, int receptionistId, Appointment appointment) {
+	public Appointment bookAppointment(String username, int slotId, Appointment appointment) {
+		Patient patient = patientRepository.getPatientByUsername(username);
+		DoctorSlot slot = doctorSlotRepository.findById(slotId)
+				.orElseThrow(() -> new ResourceNotFoundException("Slot not found"));
 
-		// Step 1: Validate all foreign keys using findById
-		Patient patient = patientRepository.findById(patientId).orElseThrow(() -> new ResourceNotFoundException("Invalid patient ID"));
-		Doctor doctor = doctorRepository.findById(doctorId).orElseThrow(() -> new ResourceNotFoundException("Invalid doctor ID"));
-		Receptionist receptionist = receptionistRepository.findById(receptionistId).orElseThrow(() -> new ResourceNotFoundException("Invalid receptionist ID"));
+		if (slot.getBookedCount() >= slot.getMaxAppointment()) {
+			throw new ResourceNotFoundException("Slot is fully booked.");
+		}
 
-		// Step 2: Set the fetched FK objects into appointment
 		appointment.setPatient(patient);
-		appointment.setDoctor(doctor);
-		appointment.setReceptionist(receptionist);
+		appointment.setDoctor(slot.getDoctor());
+		appointment.setDoctorSlot(slot);
+		appointment.setScheduledDate(slot.getDate());
+		appointment.setScheduledTime(slot.getTime());
+		appointment.setStatus(Appointment.Status.SCHEDULED);
 
-		// Step 3: Save appointment
+		slot.setBookedCount(slot.getBookedCount() + 1);
+		doctorSlotRepository.save(slot);
+
 		return appointmentRepository.save(appointment);
 	}
 
-	public Appointment getAppointmentById(int id) {
-		return appointmentRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Appointment Id not found"));
+	public List<Appointment> getAppointmentForPatient(String username) {
+		return appointmentRepository.findByPatientUserUsername(username);
+	}
+
+	public List<Appointment> getAppointmentForDoctor(String username) {
+		return appointmentRepository.findByDoctorUserUsername(username);
+	}
+
+	public Appointment rescheduleAppointment(int id, Appointment updated) {
+		Appointment appointment=appointmentRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Appointment not found"));
+		
+		if(updated.getScheduledDate() != null)
+			appointment.setScheduledDate(updated.getScheduledDate());
+		
+		if(updated.getScheduledTime() != null)
+			appointment.setScheduledTime(updated.getScheduledTime());
+		
+		if(updated.getStatus() != null)
+			appointment.setStatus(updated.getStatus());
+		
+		return appointmentRepository.save(appointment);
 	}
 
 	public List<Appointment> getAllAppointment() {
 		return appointmentRepository.findAll();
 	}
-
-	public void deleteAppointment(int id) {
-        getAppointmentById(id); // validation
-        appointmentRepository.deleteById(id);
-    }
-
-	 public Appointment rescheduleAppointment(int id, LocalDate scheduledDate, LocalTime scheduledTime) {
-	        Appointment appt = getAppointmentById(id);
-	        appt.setScheduledDate(scheduledDate);
-	        appt.setScheduledTime(scheduledTime);
-	        appt.setStatus(Appointment.Status.SCHEDULED);
-	        return appointmentRepository.save(appt);
-	    }
-
-	public List<Appointment> getByPatient(int patientId) {
-		return appointmentRepository.getByPatientId(patientId);
-	}
-	
-	public List<Appointment> getByDoctor(int doctorId) {
-		return appointmentRepository.getByPatientId(doctorId);
-	}
-	
-	public List<Appointment> getByReceptionist(int adminId) {
-		return appointmentRepository.getByPatientId(adminId);
-	}
-	
-	public List<Appointment> getByStatus(Appointment.Status status) {
-        return appointmentRepository.findByStatus(status);
-    }
 
 }

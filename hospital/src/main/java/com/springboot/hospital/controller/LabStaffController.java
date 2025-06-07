@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,9 +24,9 @@ public class LabStaffController {
 	@Autowired
 	private LabStaffService labstaffService;
 	
-	@PostMapping("/add/{departmentId}/{receptionistId}")
-	public ResponseEntity<?> addLabStaff(@PathVariable int departmentId,@PathVariable int receptionistId,@RequestBody LabStaff labStaff){
-		return ResponseEntity.status(HttpStatus.CREATED).body(labstaffService.addLabStaff(departmentId,receptionistId,labStaff));
+	@PostMapping("/add/{departmentId}")
+	public ResponseEntity<?> addLabStaff(@PathVariable int departmentId,Principal principal,@RequestBody LabStaff labStaff){
+		return ResponseEntity.status(HttpStatus.CREATED).body(labstaffService.addLabStaff(departmentId,labStaff,principal.getName()));
 	}
 	
 	@GetMapping("/get-all")
@@ -39,9 +40,16 @@ public class LabStaffController {
 		return labstaffService.getLabstaffByUsername(username);
 	}
 	
-	@DeleteMapping("/delete/{id}")
-	public ResponseEntity<?> delete(@PathVariable int id){
-		labstaffService.delete(id);
+	@PutMapping("/update")
+	public ResponseEntity<?> update(Principal principal, @RequestBody LabStaff updated) {
+		String username=principal.getName();
+		return ResponseEntity.ok(labstaffService.updateLabStaff(username, updated));
+	}
+	
+	@DeleteMapping("/delete")
+	public ResponseEntity<?> delete(Principal principal){
+		String username=principal.getName();
+		labstaffService.delete(username);
 		return ResponseEntity.ok("LabStaff deleted");
 	}
 

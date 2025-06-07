@@ -28,16 +28,30 @@ public class PrescriptionService {
 		return prescriptionRepository.save(prescription);
 	}
 
-	public List<Prescription> getAll() {
-		return prescriptionRepository.findAll();
-	}
-
-	public Prescription getById(int id) {
-		return prescriptionRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Prescription not found"));
-	}
-
 	public List<Prescription> getByConsultation(int consultationId) {
 		return prescriptionRepository.getByConsultationId(consultationId);
+	}
+
+	public Prescription updatePrescription(int consultationId, Prescription updated) {
+		Prescription prescription=prescriptionRepository.findById(consultationId).orElseThrow(() -> new ResourceNotFoundException("Prescription not found"));
+		if(updated.getMedicineName() != null)
+			prescription.setMedicineName(updated.getMedicineName());
+		
+		if(updated.getDosageTiming() != null)
+			prescription.setDosageTiming(updated.getDosageTiming());
+		
+		if(updated.getDuration() != null)
+			prescription.setDuration(updated.getDuration());
+		
+		if(updated.getMealTime() != null)
+			prescription.setMealTime(updated.getMealTime());
+		
+		return prescriptionRepository.save(prescription);
+	}
+
+	public void deletePrescription(int prescriptionId) {
+		Prescription prescription=prescriptionRepository.findById(prescriptionId).orElseThrow(() -> new ResourceNotFoundException("Prescription not found"));
+		prescriptionRepository.delete(prescription);
 	}
 
 }

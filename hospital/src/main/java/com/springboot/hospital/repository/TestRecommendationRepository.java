@@ -9,9 +9,5 @@ import com.springboot.hospital.model.TestRecommendation;
 
 public interface TestRecommendationRepository extends JpaRepository<TestRecommendation, Integer> {
 
-	@Query("SELECT t FROM TestRecommendation t WHERE t.consultation.consultationId = ?1")
-    List<TestRecommendation> getByConsultation(int consultationId);
-	
-	@Query("SELECT t FROM TestRecommendation t WHERE t.labStaff.labStaffId = ?1")
-    List<TestRecommendation> getByLabStaff(int labStaffId);
+	List<TestRecommendation> findByConsultationConsultationId(int consultationId);
 }

@@ -29,7 +29,7 @@ public class LabStaffService {
 		this.userService = userService;
 	}
 
-	public LabStaff addLabStaff(int departmentId, int receptionistId, LabStaff labStaff) {
+	public LabStaff addLabStaff(int departmentId, LabStaff labStaff, String receptionistUsername) {
 		User user = labStaff.getUser();
 		user.setRole("LABSTAFF");
 		user = userService.signUp(user);
@@ -37,8 +37,7 @@ public class LabStaffService {
 
 		Department department = departmentRepository.findById(departmentId)
 				.orElseThrow(() -> new ResourceNotFoundException("Invalid Department ID"));
-		Receptionist receptionist = receptionistRepository.findById(receptionistId)
-				.orElseThrow(() -> new ResourceNotFoundException("Invalid receptionist ID"));
+		Receptionist receptionist = receptionistRepository.getReceptionistByUsername(receptionistUsername);
 
 		labStaff.setDepartment(department);
 		labStaff.setReceptionist(receptionist);
@@ -54,13 +53,22 @@ public class LabStaffService {
 		return labRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Lab Staff not found"));
 	}
 
-	public void delete(int id) {
-		getById(id);
-		labRepository.deleteById(id);
+	public void delete(String username) {
+		LabStaff lab=getLabstaffByUsername(username);
+		labRepository.delete(lab);
 	}
 
 	public LabStaff getLabstaffByUsername(String username) {
 		return labRepository.getLabstaffByUsername(username);
 	}
+	
+	 public LabStaff updateLabStaff(String username, LabStaff updated) {
+	        LabStaff labStaff = getLabstaffByUsername(username);
+
+	        if (updated.getName() != null) labStaff.setName(updated.getName());
+	        if (updated.getEmail() != null) labStaff.setEmail(updated.getEmail());
+
+	        return labRepository.save(labStaff);
+	    }
 
 }
