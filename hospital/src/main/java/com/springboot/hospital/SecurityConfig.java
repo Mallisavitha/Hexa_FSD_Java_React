@@ -24,6 +24,7 @@ public class SecurityConfig {
 				.authorizeHttpRequests(authorize -> authorize.requestMatchers("/api/patient/get-all").permitAll()
 						.requestMatchers("/api/user/signup").permitAll()
 						.requestMatchers("/api/user/token").authenticated()
+						.requestMatchers("/api/user/details").authenticated()
 						
 						//TestRecommendation
 						.requestMatchers("/api/test/recommend/{consultationId}").hasAuthority("DOCTOR")

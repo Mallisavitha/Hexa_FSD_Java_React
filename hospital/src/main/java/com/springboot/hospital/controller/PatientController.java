@@ -1,6 +1,9 @@
 package com.springboot.hospital.controller;
 
 import java.security.Principal;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,10 +23,13 @@ public class PatientController {
 
 	@Autowired
 	private PatientService patientService;
+	
+	Logger logger=LoggerFactory.getLogger("PatientController");
 
 	// POST: ADD Patient
 	@PostMapping("/add")
 	public ResponseEntity<?> insertPatient(@RequestBody Patient patient) {
+		logger.info("Patient is adding");
 		return ResponseEntity.status(HttpStatus.CREATED).body(patientService.insertPatient(patient));
 
 	}
@@ -31,6 +37,7 @@ public class PatientController {
 	// GET: ALL Patients
 	@GetMapping("/get-all")
 	public ResponseEntity<?> getAll() {
+		logger.info("Receptionist adding all patients details");
 		return ResponseEntity.ok(patientService.getAllPatient());
 	}
 
@@ -40,6 +47,7 @@ public class PatientController {
 
 		//Ask spring username of loggedIn user using Principal interface
 		String username = principal.getName();
+		logger.info("Patient viewing their own details");
 		return patientService.getPatientByUsername(username);
 	}
 
@@ -47,6 +55,7 @@ public class PatientController {
 	@PutMapping("/update")
 	public ResponseEntity<?> update(Principal principal, @RequestBody Patient updatedPatient) {
 		String username=principal.getName();
+		logger.info("Patient updating their own details");
 		return ResponseEntity.ok(patientService.updatePatient(username, updatedPatient));
 	}
 

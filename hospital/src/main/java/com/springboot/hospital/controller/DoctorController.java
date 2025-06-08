@@ -2,6 +2,8 @@ package com.springboot.hospital.controller;
 
 import java.security.Principal;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,26 +25,32 @@ public class DoctorController {
 
 	@Autowired
 	private DoctorService doctorService;
+	
+	Logger logger=LoggerFactory.getLogger("DoctorController");
 
 	@PostMapping("/add/{deptId}")
 	public ResponseEntity<?> insertDoctor(@PathVariable int deptId, Principal principal,@RequestBody Doctor doctor) {
+		logger.info("Receptionist adding a new doctor to department ID: "+deptId);
 		return ResponseEntity.status(HttpStatus.CREATED).body(doctorService.insertDoctor(deptId, doctor, principal.getName()));
 	}
 
 	@GetMapping("/get-all")
 	public ResponseEntity<?> getAll() {
+		logger.info("Fetching all dctors");
 		return ResponseEntity.ok(doctorService.getAllDoctors());
 	}
 
 	@GetMapping("/get-one")
 	public Doctor getDoctorById(Principal principal) {
 		String username = principal.getName();
+		logger.info("Doctor is requesting their own profile");
 		return doctorService.getDoctorByUsername(username);
 	}
 
 	@PutMapping("/update")
 	public ResponseEntity<?> update(Principal principal, @RequestBody Doctor updatedDoctor) {
 		String username=principal.getName();
+		logger.info("Doctor is updating their profile");
 		return ResponseEntity.ok(doctorService.updateDoctor(username, updatedDoctor));
 	}
 
@@ -60,6 +68,7 @@ public class DoctorController {
 	
 	@GetMapping("/search-name/{name}")
 	public ResponseEntity<?> searchByName(@PathVariable String name){
+		logger.info("Get doctors by thier specialization: "+name);
 		return ResponseEntity.ok(doctorService.searchByName(name));
 	}
 }
