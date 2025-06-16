@@ -42,6 +42,7 @@ public class SecurityConfig {
 						.requestMatchers("/api/consultation/doctor/get/{appointmentId}").hasAuthority("DOCTOR")
 						.requestMatchers("/api/consultation/update/{appointmentId}").hasAuthority("DOCTOR")
 						.requestMatchers("/api/consultation/patient/get/{appointmentId}").hasAuthority("PATIENT")
+						.requestMatchers("/api/consultation/get-all").hasAuthority("RECEPTIONIST")
 						
 						//Appointment
 						.requestMatchers("/api/appointment/book/{slotId}").hasAuthority("PATIENT")
@@ -53,7 +54,8 @@ public class SecurityConfig {
 						//Doctor-slot
 						.requestMatchers("/api/doctor-slot/add").hasAuthority("DOCTOR")
 						.requestMatchers("/api/doctor-slot/my-slot").hasAuthority("DOCTOR")
-						.requestMatchers("/api/doctor-slot/all").hasAuthority("RECEPTIONIST")
+						.requestMatchers("/api/doctor-slot/all").permitAll()
+						.requestMatchers("api/doctor-slot/doctor-name/{name}").permitAll()
 						
 						//Receptionist
 						.requestMatchers("/api/receptionist/add").permitAll()
@@ -64,7 +66,7 @@ public class SecurityConfig {
 						//Doctor
 						.requestMatchers("/api/doctor/add/{deptId}").hasAuthority("RECEPTIONIST")
 						.requestMatchers("/api/doctor/get-one").hasAuthority("DOCTOR")
-						.requestMatchers("/api/doctor/get-all").hasAuthority("RECEPTIONIST")
+						.requestMatchers("/api/doctor/get-all").permitAll()
 						.requestMatchers("/api/doctor/update").hasAuthority("DOCTOR")
 						.requestMatchers("/api/doctor/search-name/{name}").hasAnyAuthority("PATIENT","RECEPTIONIST")
 						.requestMatchers("/api/doctor/specialization/{specialization}").hasAnyAuthority("PATIENT","RECEPTIONIST")
@@ -79,7 +81,9 @@ public class SecurityConfig {
 						.requestMatchers("/api/patient/add").permitAll()
 						.requestMatchers("/api/patient/get-one").hasAuthority("PATIENT")
 						.requestMatchers("/api/patient/update").hasAuthority("PATIENT")
-						.requestMatchers("/api/patient/get-all").permitAll()
+						.requestMatchers("/api/patient/get-all").hasAnyAuthority("RECEPTIONIST","DOCTOR")
+						.requestMatchers("/api/patient/specialization/{specialization}").hasAnyAuthority("DOCTOR","RECEPTIONIST")
+						.requestMatchers("/api/patient/date/{date}").hasAnyAuthority("DOCTOR","RECEPTIONIST")
 						
 						.anyRequest().authenticated())
 				.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)

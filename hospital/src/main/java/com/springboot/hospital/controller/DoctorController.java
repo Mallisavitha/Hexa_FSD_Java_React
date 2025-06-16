@@ -1,6 +1,7 @@
 package com.springboot.hospital.controller;
 
 import java.security.Principal;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,8 +15,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.springboot.hospital.dto.DoctorDto;
 import com.springboot.hospital.model.Doctor;
 import com.springboot.hospital.service.DoctorService;
 
@@ -35,9 +38,11 @@ public class DoctorController {
 	}
 
 	@GetMapping("/get-all")
-	public ResponseEntity<?> getAll() {
-		logger.info("Fetching all dctors");
-		return ResponseEntity.ok(doctorService.getAllDoctors());
+	public List<?> getAllCourses(@RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
+			@RequestParam(name = "size", required = false, defaultValue = "1000000") Integer size) {
+		if (page == 0 && size == 1000000)
+			logger.info("No Pagination call for all courses");
+		return doctorService.getAllDoctors(page, size);
 	}
 
 	@GetMapping("/get-one")

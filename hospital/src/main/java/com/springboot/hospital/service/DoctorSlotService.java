@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.springboot.hospital.dto.DoctorSlotDto;
 import com.springboot.hospital.exception.ResourceNotFoundException;
 import com.springboot.hospital.model.Doctor;
 import com.springboot.hospital.model.DoctorSlot;
@@ -15,11 +16,14 @@ public class DoctorSlotService {
 	
 	private DoctorSlotRepository doctorSlotRepository;
 	private DoctorRepository doctorRepository;
+	private DoctorSlotDto doctorSlotDto;
 
-	public DoctorSlotService(DoctorSlotRepository doctorSlotRepository, DoctorRepository doctorRepository) {
+	public DoctorSlotService(DoctorSlotRepository doctorSlotRepository, DoctorRepository doctorRepository,
+			DoctorSlotDto doctorSlotDto) {
 		super();
 		this.doctorSlotRepository = doctorSlotRepository;
 		this.doctorRepository = doctorRepository;
+		this.doctorSlotDto = doctorSlotDto;
 	}
 
 	public DoctorSlot addSlot(String username, DoctorSlot slot) {
@@ -30,11 +34,17 @@ public class DoctorSlotService {
 
 	public List<DoctorSlot> getSlotsByDoctorUsername(String username) {
 		Doctor doctor = doctorRepository.findByUserUsername(username).orElseThrow(() -> new ResourceNotFoundException("Doctor not found"));
-		return doctorSlotRepository.findByDoctorDoctorId(doctor.getDoctorId());
+		return doctorSlotRepository.findByDoctorId(doctor.getDoctorId());
 	}
 
-	public List<DoctorSlot> getAllSlots() {
-		return doctorSlotRepository.findAll();
+	public List<DoctorSlotDto> getAllSlots() {
+		List<DoctorSlot> list=doctorSlotRepository.findAll();
+		return doctorSlotDto.convertSlotIntoDto(list);
+	}
+
+	public List<DoctorSlotDto> getSlotByDoctorName(String name) {
+		List<DoctorSlot> list=doctorSlotRepository.getSlotByDoctorName(name);
+		return doctorSlotDto.convertSlotIntoDto(list);
 	}
 
 }

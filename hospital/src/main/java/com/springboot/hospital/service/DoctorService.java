@@ -2,8 +2,11 @@ package com.springboot.hospital.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.springboot.hospital.dto.DoctorDto;
 import com.springboot.hospital.exception.ResourceNotFoundException;
 import com.springboot.hospital.model.Department;
 import com.springboot.hospital.model.Doctor;
@@ -21,13 +24,16 @@ public class DoctorService {
 	private DepartmentRepository deptRepository;
 	private ReceptionistRepository receptionistRepository;
 	private UserService userService;
+	private DoctorDto doctorDto;
 
 	public DoctorService(DoctorRepository doctorRepository, DepartmentRepository deptRepository,
-			ReceptionistRepository receptionistRepository, UserService userService) {
+			ReceptionistRepository receptionistRepository, UserService userService, DoctorDto doctorDto) {
+		super();
 		this.doctorRepository = doctorRepository;
 		this.deptRepository = deptRepository;
 		this.receptionistRepository = receptionistRepository;
 		this.userService = userService;
+		this.doctorDto = doctorDto;
 	}
 
 	public Doctor insertDoctor(int deptId, Doctor doctor, String receptionistUsername) {
@@ -46,8 +52,11 @@ public class DoctorService {
 		return doctorRepository.save(doctor);
 	}
 
-	public List<Doctor> getAllDoctors() {
-		return doctorRepository.findAll();
+	public List<?> getAllDoctors(int page, int size) {
+		//Activate Pageable interface
+		Pageable pageable=PageRequest.of(page, size);
+		List<Doctor> list=doctorRepository.findAll(pageable).getContent();
+		return doctorDto.convertDoctorIntoDto(list);
 	}
 
 	public Doctor getDoctorById(int id) {
@@ -75,17 +84,18 @@ public class DoctorService {
 		doctorRepository.delete(doctor);
 	}
 
-	public List<Doctor> getBySpecialization(String specialization) {
-		return doctorRepository.getBySpecialization(specialization);
+	public List<DoctorDto> getBySpecialization(String specialization) {
+		List<Doctor> list=doctorRepository.getBySpecialization(specialization);
+		return doctorDto.convertDoctorIntoDto(list);
 	}
 
 	public Doctor getDoctorByUsername(String username) {
 		return doctorRepository.getDoctorByUsername(username);
 	}
 
-	public List<Doctor> searchByName(String name) {
-		// TODO Auto-generated method stub
-		return doctorRepository.searchByName(name);
+	public List<DoctorDto> searchByName(String name) {
+		List<Doctor> list=doctorRepository.searchByName(name);
+		return doctorDto.convertDoctorIntoDto(list);
 	}
 
 }

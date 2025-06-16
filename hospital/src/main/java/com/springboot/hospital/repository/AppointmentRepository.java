@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import com.springboot.hospital.model.Appointment;
+import com.springboot.hospital.model.Doctor;
+import com.springboot.hospital.model.Patient;
 
 public interface AppointmentRepository extends JpaRepository<Appointment, Integer> {
 
@@ -17,4 +19,11 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Intege
 
 	@Query("SELECT a FROM Appointment a WHERE a.doctorSlot.slotId = :slotId")
 	List<Appointment> getAppointmentsBySlotId(int slotId);
+
+	@Query("select a from Appointment a where a.patient=?1")
+	List<Appointment> findByPatient(Patient patient);
+	
+	@Query("select a from Appointment a where a.doctor=?1")
+	List<Appointment> findByDoctor(Doctor doctor);
+
 }

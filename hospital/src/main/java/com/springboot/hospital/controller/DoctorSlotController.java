@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -44,6 +45,11 @@ public class DoctorSlotController {
 	public ResponseEntity<?> getAllSlots(){
 		logger.info("View all slots");
 		return ResponseEntity.status(HttpStatus.OK).body(doctorSlotService.getAllSlots());
+	}
+	
+	@GetMapping("/doctor-name/{name}")
+	public ResponseEntity<?> getSlotsByDoctorName(@PathVariable String name){
+		return ResponseEntity.status(HttpStatus.OK).body(doctorSlotService.getSlotByDoctorName(name));
 	}
 
 }

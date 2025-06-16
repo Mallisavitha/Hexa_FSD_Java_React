@@ -4,33 +4,34 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.springboot.hospital.dto.AppointmentDto;
 import com.springboot.hospital.exception.ResourceNotFoundException;
 import com.springboot.hospital.model.Appointment;
+import com.springboot.hospital.model.Doctor;
 import com.springboot.hospital.model.DoctorSlot;
 import com.springboot.hospital.model.Patient;
 import com.springboot.hospital.repository.AppointmentRepository;
 import com.springboot.hospital.repository.DoctorRepository;
 import com.springboot.hospital.repository.DoctorSlotRepository;
 import com.springboot.hospital.repository.PatientRepository;
-import com.springboot.hospital.repository.ReceptionistRepository;
 
 @Service
 public class AppointmentService {
 
 	private AppointmentRepository appointmentRepository;
 	private PatientRepository patientRepository;
+	private AppointmentDto appointmentDto;	
 	private DoctorRepository doctorRepository;
-	private ReceptionistRepository receptionistRepository;
 	private DoctorSlotRepository doctorSlotRepository;
 
 	public AppointmentService(AppointmentRepository appointmentRepository, PatientRepository patientRepository,
-			DoctorRepository doctorRepository, ReceptionistRepository receptionistRepository,
+			AppointmentDto appointmentDto, DoctorRepository doctorRepository,
 			DoctorSlotRepository doctorSlotRepository) {
 		super();
 		this.appointmentRepository = appointmentRepository;
 		this.patientRepository = patientRepository;
+		this.appointmentDto = appointmentDto;
 		this.doctorRepository = doctorRepository;
-		this.receptionistRepository = receptionistRepository;
 		this.doctorSlotRepository = doctorSlotRepository;
 	}
 
@@ -56,12 +57,16 @@ public class AppointmentService {
 		return appointmentRepository.save(appointment);
 	}
 
-	public List<Appointment> getAppointmentForPatient(String username) {
-		return appointmentRepository.findByPatientUserUsername(username);
+	public List<AppointmentDto> getAppointmentForPatient(String username) {
+		Patient patient=patientRepository.getPatientByUsername(username);
+		List<Appointment> list=appointmentRepository.findByPatient(patient);
+		return appointmentDto.convertAppointmentIntoDto(list);
 	}
 
-	public List<Appointment> getAppointmentForDoctor(String username) {
-		return appointmentRepository.findByDoctorUserUsername(username);
+	public List<AppointmentDto> getAppointmentForDoctor(String username) {
+		Doctor doctor=doctorRepository.getDoctorByUsername(username);
+		List<Appointment> list=appointmentRepository.findByDoctor(doctor);
+		return appointmentDto.convertAppointmentIntoDto(list);
 	}
 
 	public Appointment rescheduleAppointment(int id, Appointment updated) {
@@ -79,8 +84,9 @@ public class AppointmentService {
 		return appointmentRepository.save(appointment);
 	}
 
-	public List<Appointment> getAllAppointment() {
-		return appointmentRepository.findAll();
+	public List<AppointmentDto> getAllAppointment() {
+		List<Appointment> list=appointmentRepository.findAll();
+		return appointmentDto.convertAppointmentIntoDto(list);
 	}
 
 }

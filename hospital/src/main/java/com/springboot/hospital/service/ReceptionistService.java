@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.springboot.hospital.dto.ReceptionistDto;
 import com.springboot.hospital.exception.ResourceNotFoundException;
 import com.springboot.hospital.model.Receptionist;
 import com.springboot.hospital.model.User;
@@ -14,10 +15,14 @@ public class ReceptionistService {
 
 	private ReceptionistRepository recepRepository;
 	private UserService userService;
+	private ReceptionistDto receptionistDto;
 
-	public ReceptionistService(ReceptionistRepository recepRepository, UserService userService) {
+	public ReceptionistService(ReceptionistRepository recepRepository, UserService userService,
+			ReceptionistDto receptionistDto) {
+		super();
 		this.recepRepository = recepRepository;
 		this.userService = userService;
+		this.receptionistDto = receptionistDto;
 	}
 
 	public Receptionist insertReceptionist(Receptionist receptionist) {
@@ -28,8 +33,9 @@ public class ReceptionistService {
 		return recepRepository.save(receptionist);
 	}
 
-	public List<Receptionist> getAll() {
-		return recepRepository.findAll();
+	public List<ReceptionistDto> getAll() {
+		List<Receptionist> list=recepRepository.findAll();
+		return receptionistDto.convertReceptionistIntoDto(list);
 	}
 
 	public Receptionist getById(int id) {

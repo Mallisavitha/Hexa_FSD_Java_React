@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.springboot.hospital.dto.TestRecommendationDto;
 import com.springboot.hospital.exception.ResourceNotFoundException;
 import com.springboot.hospital.model.Consultation;
 import com.springboot.hospital.model.LabStaff;
@@ -18,12 +19,16 @@ public class TestRecommendationService {
 	private TestRecommendationRepository testRepository;
 	private ConsultationRepository consultationRepository;
 	private LabStaffRepository labStaffRepository;
+	private TestRecommendationDto testDto;
 
 	public TestRecommendationService(TestRecommendationRepository testRepository,
-			ConsultationRepository consultationRepository, LabStaffRepository labStaffRepository) {
+			ConsultationRepository consultationRepository, LabStaffRepository labStaffRepository,
+			TestRecommendationDto testDto) {
+		super();
 		this.testRepository = testRepository;
 		this.consultationRepository = consultationRepository;
 		this.labStaffRepository = labStaffRepository;
+		this.testDto = testDto;
 	}
 
 	public TestRecommendation recommendTest(int consultationId, TestRecommendation test) {
@@ -35,8 +40,9 @@ public class TestRecommendationService {
 		return testRepository.save(test);
 	}
 
-	public List<TestRecommendation> getbyConsultation(int consultationId) {
-		return testRepository.findByConsultationConsultationId(consultationId);
+	public List<TestRecommendationDto> getbyConsultation(int consultationId) {
+		List<TestRecommendation> list=testRepository.findByConsultationId(consultationId);
+		return testDto.convertTestIntoDto(list);
 	}
 
 	public TestRecommendation updateTest(int testId, TestRecommendation updated, String username) {

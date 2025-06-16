@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.springboot.hospital.dto.PrescriptionDto;
 import com.springboot.hospital.exception.ResourceNotFoundException;
 import com.springboot.hospital.model.Consultation;
 import com.springboot.hospital.model.Prescription;
@@ -15,11 +16,14 @@ public class PrescriptionService {
 	
 	private PrescriptionRepository prescriptionRepository;
 	private ConsultationRepository consultationRepository;
-	
+	private PrescriptionDto prescriptionDto;
+
 	public PrescriptionService(PrescriptionRepository prescriptionRepository,
-			ConsultationRepository consultationRepository) {
+			ConsultationRepository consultationRepository, PrescriptionDto prescriptionDto) {
+		super();
 		this.prescriptionRepository = prescriptionRepository;
 		this.consultationRepository = consultationRepository;
+		this.prescriptionDto = prescriptionDto;
 	}
 
 	public Prescription addPrescription(int consultationId, Prescription prescription) {
@@ -28,8 +32,9 @@ public class PrescriptionService {
 		return prescriptionRepository.save(prescription);
 	}
 
-	public List<Prescription> getByConsultation(int consultationId) {
-		return prescriptionRepository.getByConsultationId(consultationId);
+	public List<PrescriptionDto> getByConsultation(int consultationId) {
+		List<Prescription> list=prescriptionRepository.getByConsultationId(consultationId);
+		return prescriptionDto.convertPrescriptionIntoDto(list);
 	}
 
 	public Prescription updatePrescription(int consultationId, Prescription updated) {

@@ -4,22 +4,35 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.springboot.hospital.dto.ConsultationDto;
 import com.springboot.hospital.exception.ResourceNotFoundException;
 import com.springboot.hospital.model.Appointment;
 import com.springboot.hospital.model.Consultation;
+import com.springboot.hospital.model.Doctor;
+import com.springboot.hospital.model.Patient;
 import com.springboot.hospital.repository.AppointmentRepository;
 import com.springboot.hospital.repository.ConsultationRepository;
+import com.springboot.hospital.repository.DoctorRepository;
+import com.springboot.hospital.repository.PatientRepository;
 
 @Service
 public class ConsultationService {
 
 	private ConsultationRepository consultationRepository;
 	private AppointmentRepository appointmentRepository;
+	private ConsultationDto consultationDto;
+	private PatientRepository patientRepository;
+	private DoctorRepository doctorRepository;
 
 	public ConsultationService(ConsultationRepository consultationRepository,
-			AppointmentRepository appointmentRepository) {
+			AppointmentRepository appointmentRepository, ConsultationDto consultationDto,
+			PatientRepository patientRepository, DoctorRepository doctorRepository) {
+		super();
 		this.consultationRepository = consultationRepository;
 		this.appointmentRepository = appointmentRepository;
+		this.consultationDto = consultationDto;
+		this.patientRepository = patientRepository;
+		this.doctorRepository = doctorRepository;
 	}
 
 	public Consultation addConsultation(int appointmentId, Consultation consultation) {
@@ -33,15 +46,23 @@ public class ConsultationService {
 		return consultationRepository.save(consultation);
 	}
 
-	public List<Consultation> getAll() {
-		return consultationRepository.findAll();
+	public List<ConsultationDto> getAll() {
+		List<Consultation> list = consultationRepository.findAll();
+		return consultationDto.convertConsultationIntoDto(list);
 	}
 
-	public Consultation getForDoctorByAppointmentId(int appointmentId, String doctorUsername) {
+	public ConsultationDto getForDoctorByAppointmentId(int appointmentId, String doctorUsername) {
 		Consultation consultation = consultationRepository.findByAppointmentId(appointmentId)
 				.orElseThrow(() -> new ResourceNotFoundException("Consultation not found"));
 
-		return consultation;
+		Doctor doctor = doctorRepository.getDoctorByUsername(doctorUsername);
+
+		// Check if the doctor is the one associated with this consultation
+		if (consultation.getAppointment().getDoctor().getDoctorId() != doctor.getDoctorId()) {
+			throw new ResourceNotFoundException("Doctor not authorized to view this consultation");
+		}
+
+		return consultationDto.convertConsultationIntoDto(List.of(consultation)).get(0);
 	}
 
 	public Consultation updateConsultation(int appointmentId, Consultation updated) {
@@ -59,11 +80,18 @@ public class ConsultationService {
 		return consultationRepository.save(consultation);
 	}
 
-	public Consultation getForPatientByAppointmentId(int appointmentId, String patientUsername) {
+	public ConsultationDto getForPatientByAppointmentId(int appointmentId, String patientUsername) {
 		Consultation consultation = consultationRepository.findByAppointmentId(appointmentId)
 				.orElseThrow(() -> new ResourceNotFoundException("Consultation not found"));
 
-		return consultation;
+		Patient patient = patientRepository.getPatientByUsername(patientUsername);
+
+		// Check if the patient is the one associated with this consultation
+		if (consultation.getAppointment().getPatient().getPatientId() != patient.getPatientId()) {
+			throw new ResourceNotFoundException("Patient not authorized to view this consultation");
+		}
+
+		return consultationDto.convertConsultationIntoDto(List.of(consultation)).get(0);
 	}
 
 }

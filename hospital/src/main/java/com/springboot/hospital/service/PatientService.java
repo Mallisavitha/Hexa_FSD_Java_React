@@ -1,9 +1,11 @@
 package com.springboot.hospital.service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.springboot.hospital.dto.PatientDto;
 import com.springboot.hospital.exception.ResourceNotFoundException;
 import com.springboot.hospital.model.Patient;
 import com.springboot.hospital.repository.PatientRepository;
@@ -14,10 +16,13 @@ public class PatientService {
 
 	private PatientRepository patientRepository;
 	private UserService userService;
-	
-	public PatientService(PatientRepository patientRepository, UserService userService) {
+	private PatientDto patientDto;
+
+	public PatientService(PatientRepository patientRepository, UserService userService, PatientDto patientDto) {
+		super();
 		this.patientRepository = patientRepository;
 		this.userService = userService;
+		this.patientDto = patientDto;
 	}
 
 	public Patient insertPatient(Patient patient) {
@@ -37,8 +42,9 @@ public class PatientService {
 		return patientRepository.save(patient);
 	}
 
-	public List<Patient> getAllPatient() {
-		return patientRepository.findAll();
+	public List<PatientDto> getAllPatient() {
+		List<Patient> list=patientRepository.findAll();
+		return patientDto.convertPatientIntoDto(list);
 	}
 
 	public Patient getPatientById(int id) {
@@ -70,6 +76,16 @@ public class PatientService {
 
 	public Patient getPatientByUsername(String username) {
 		return patientRepository.getPatientByUsername(username);
+	}
+
+	public List<PatientDto> getPatientByDoctorSpecialization(String specialization) {
+		List<Patient> list=patientRepository.getPatientsBySpecialization(specialization);
+		return patientDto.convertPatientIntoDto(list);
+	}
+
+	public List<PatientDto> getPatientsByAppointment(LocalDate parseDate) {
+		List<Patient> list=patientRepository.getPatientByAppointmentDate(parseDate);
+		return patientDto.convertPatientIntoDto(list);
 	}
 
 }

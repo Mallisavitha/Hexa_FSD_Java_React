@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.springboot.hospital.dto.LabStaffDto;
 import com.springboot.hospital.exception.ResourceNotFoundException;
 import com.springboot.hospital.model.Department;
 import com.springboot.hospital.model.LabStaff;
@@ -20,13 +21,16 @@ public class LabStaffService {
 	private DepartmentRepository departmentRepository;
 	private ReceptionistRepository receptionistRepository;
 	private UserService userService;
+	private LabStaffDto labStaffdto;
 
 	public LabStaffService(LabStaffRepository labRepository, DepartmentRepository departmentRepository,
-			ReceptionistRepository receptionistRepository, UserService userService) {
+			ReceptionistRepository receptionistRepository, UserService userService, LabStaffDto labStaffdto) {
+		super();
 		this.labRepository = labRepository;
 		this.departmentRepository = departmentRepository;
 		this.receptionistRepository = receptionistRepository;
 		this.userService = userService;
+		this.labStaffdto = labStaffdto;
 	}
 
 	public LabStaff addLabStaff(int departmentId, LabStaff labStaff, String receptionistUsername) {
@@ -45,8 +49,9 @@ public class LabStaffService {
 		return labRepository.save(labStaff);
 	}
 
-	public List<LabStaff> getAll() {
-		return labRepository.findAll();
+	public List<LabStaffDto> getAll() {
+		List<LabStaff> list=labRepository.findAll();
+		return labStaffdto.convertLabIntoDto(list);
 	}
 
 	public LabStaff getById(int id) {
