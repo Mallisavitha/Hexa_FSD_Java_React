@@ -58,5 +58,7 @@ public class PrescriptionService {
 		Prescription prescription=prescriptionRepository.findById(prescriptionId).orElseThrow(() -> new ResourceNotFoundException("Prescription not found"));
 		prescriptionRepository.delete(prescription);
 	}
+	
+	
 
 }

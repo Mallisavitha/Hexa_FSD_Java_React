@@ -7,6 +7,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,6 +20,7 @@ import com.springboot.hospital.service.DoctorSlotService;
 
 @RestController
 @RequestMapping("/api/doctor-slot")
+@CrossOrigin(origins = "http://localhost:5173")
 public class DoctorSlotController {
 	
 	@Autowired
@@ -50,6 +53,13 @@ public class DoctorSlotController {
 	@GetMapping("/doctor-name/{name}")
 	public ResponseEntity<?> getSlotsByDoctorName(@PathVariable String name){
 		return ResponseEntity.status(HttpStatus.OK).body(doctorSlotService.getSlotByDoctorName(name));
+	}
+	
+	@DeleteMapping("/delete/{slotId}")
+	public ResponseEntity<?> deleteSlot(@PathVariable int slotId, Principal principal) {
+	    String username = principal.getName();
+	    doctorSlotService.deleteSlotByDoctor(slotId, username);
+	    return ResponseEntity.ok("Slot deleted successfully");
 	}
 
 }

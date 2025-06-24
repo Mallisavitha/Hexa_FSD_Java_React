@@ -16,7 +16,8 @@ public class DoctorDto {
 	private int experienceYear;
 	private String qualification;
 	private String designation;
-	
+	private String contact;
+	private String profilePic;
 	
 	public int getDoctorId() {
 		return doctorId;
@@ -54,7 +55,18 @@ public class DoctorDto {
 	public void setDesignation(String designation) {
 		this.designation = designation;
 	}
-	
+	public String getContact() {
+		return contact;
+	}
+	public void setContact(String contact) {
+		this.contact = contact;
+	}
+	public String getProfilePic() {
+		return profilePic;
+	}
+	public void setProfilePic(String profilePic) {
+		this.profilePic = profilePic;
+	}
 	public List<DoctorDto> convertDoctorIntoDto(List<Doctor> list){
 		List<DoctorDto> listDto=new ArrayList<>();
 		list.stream().forEach(doctor ->{
@@ -66,6 +78,8 @@ public class DoctorDto {
 			dto.setQualification(doctor.getQualification());
 			dto.setSpecialization(doctor.getSpecialization());
 			dto.setDesignation(doctor.getDesignation());
+			dto.setContact(doctor.getContact());
+			dto.setProfilePic(doctor.getProfilePic());
 			listDto.add(dto);
 		});
 		return listDto;

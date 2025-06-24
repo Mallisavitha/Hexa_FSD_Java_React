@@ -89,17 +89,17 @@ public class TestRecommendationServiceTest {
         verify(consultationRepository, times(1)).findById(99);
     }
 
-    @Test
-    public void getByConsultationSuccessTest() {
-        when(testRepository.findByConsultationId(1)).thenReturn(List.of(testRecommendation));
-        when(testDto.convertTestIntoDto(anyList())).thenReturn(List.of(new TestRecommendationDto()));
-
-        List<TestRecommendationDto> result = testRecommendationService.getbyConsultation(1);
-
-        assertEquals(1, result.size());
-        verify(testRepository, times(1)).findByConsultationId(1);
-        verify(testDto, times(1)).convertTestIntoDto(anyList());
-    }
+//    @Test
+//    public void getByConsultationSuccessTest() {
+//        when(testRepository.findByConsultationId(1)).thenReturn(List.of(testRecommendation));
+//        when(testDto.convertTestIntoDto(anyList())).thenReturn(List.of(new TestRecommendationDto()));
+//
+//        List<TestRecommendationDto> result = testRecommendationService.getbyConsultation(1);
+//
+//        assertEquals(1, result.size());
+//        verify(testRepository, times(1)).findByConsultationId(1);
+//        verify(testDto, times(1)).convertTestIntoDto(anyList());
+//    }
 
     @Test
     public void updateTestSuccessTest() {

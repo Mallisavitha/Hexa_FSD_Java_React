@@ -32,6 +32,8 @@ public class Patient {
 	@Column(name="contact_number",length=15)
 	private String contactNumber;
 	
+	private String profilePic;
+	
 	@ManyToOne
 	private Receptionist receptionist;
 	
@@ -93,6 +95,16 @@ public class Patient {
 	public void setUser(User user) {
 		this.user = user;
 	}
+
+	public String getProfilePic() {
+		return profilePic;
+	}
+
+	public void setProfilePic(String profilePic) {
+		this.profilePic = profilePic;
+	}
+	
+	
 
 	
 	

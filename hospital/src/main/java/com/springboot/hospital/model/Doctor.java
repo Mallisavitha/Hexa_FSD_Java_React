@@ -31,6 +31,10 @@ public class Doctor {
 	
 	@Column(name="designation")
 	private String designation;
+	private String contact;
+	private String profilePic;
+	@Column(name = "added_by")
+	private String addedBy;
 	
 	@ManyToOne
 	private Department department;
@@ -112,6 +116,33 @@ public class Doctor {
 	public void setUser(User user) {
 		this.user = user;
 	}
+
+	public String getContact() {
+		return contact;
+	}
+
+	public void setContact(String contact) {
+		this.contact = contact;
+	}
+
+	public String getProfilePic() {
+		return profilePic;
+	}
+
+	public void setProfilePic(String profilePic) {
+		this.profilePic = profilePic;
+	}
+
+	public String getAddedBy() {
+		return addedBy;
+	}
+
+	public void setAddedBy(String addedBy) {
+		this.addedBy = addedBy;
+	}
+	
+	
+	
 	
 	
 }

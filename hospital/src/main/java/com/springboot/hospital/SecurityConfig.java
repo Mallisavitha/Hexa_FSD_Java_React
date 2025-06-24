@@ -3,6 +3,7 @@ package com.springboot.hospital;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -21,10 +22,15 @@ public class SecurityConfig {
 	@Bean
 	SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http.csrf((csrf) -> csrf.disable())
-				.authorizeHttpRequests(authorize -> authorize.requestMatchers("/api/patient/get-all").permitAll()
+				.authorizeHttpRequests(authorize -> authorize
+						.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+						.requestMatchers("/api/patient/get-all").permitAll()
 						.requestMatchers("/api/user/signup").permitAll()
 						.requestMatchers("/api/user/token").authenticated()
 						.requestMatchers("/api/user/details").authenticated()
+						
+						//Department
+						.requestMatchers("/api/department/get-all").permitAll()
 						
 						//TestRecommendation
 						.requestMatchers("/api/test/recommend/{consultationId}").hasAuthority("DOCTOR")
@@ -48,14 +54,15 @@ public class SecurityConfig {
 						.requestMatchers("/api/appointment/book/{slotId}").hasAuthority("PATIENT")
 						.requestMatchers("/api/appointment/own").hasAuthority("PATIENT")
 						.requestMatchers("/api/appointment/doctor").hasAuthority("DOCTOR")
-						.requestMatchers("/api/appointment/reschedule/{id}").hasAnyAuthority("DOCTOR","RECEPTIONIST")
+						.requestMatchers("/api/appointment/reschedule/{id}").permitAll()
 						.requestMatchers("/api/appointment/get-all").hasAuthority("RECEPTIONIST")
-						
+						.requestMatchers("/api/appointment/last/{patientId}").hasAuthority("DOCTOR")						
 						//Doctor-slot
 						.requestMatchers("/api/doctor-slot/add").hasAuthority("DOCTOR")
 						.requestMatchers("/api/doctor-slot/my-slot").hasAuthority("DOCTOR")
 						.requestMatchers("/api/doctor-slot/all").permitAll()
 						.requestMatchers("api/doctor-slot/doctor-name/{name}").permitAll()
+						.requestMatchers("/api/doctor-slot/delete/{slotId}").hasAuthority("DOCTOR")
 						
 						//Receptionist
 						.requestMatchers("/api/receptionist/add").permitAll()
@@ -66,7 +73,10 @@ public class SecurityConfig {
 						//Doctor
 						.requestMatchers("/api/doctor/add/{deptId}").hasAuthority("RECEPTIONIST")
 						.requestMatchers("/api/doctor/get-one").hasAuthority("DOCTOR")
+						.requestMatchers("/api/doctor/upload/profile-pic").hasAuthority("DOCTOR")
+						.requestMatchers("/api/doctor/upload/profile-pic/{id}").hasAuthority("RECEPTIONIST")
 						.requestMatchers("/api/doctor/get-all").permitAll()
+						.requestMatchers("/api/doctor/delete/{id}").hasAuthority("RECEPTIONIST")
 						.requestMatchers("/api/doctor/update").hasAuthority("DOCTOR")
 						.requestMatchers("/api/doctor/search-name/{name}").hasAnyAuthority("PATIENT","RECEPTIONIST")
 						.requestMatchers("/api/doctor/specialization/{specialization}").hasAnyAuthority("PATIENT","RECEPTIONIST")
@@ -79,11 +89,15 @@ public class SecurityConfig {
 
 						//Patient
 						.requestMatchers("/api/patient/add").permitAll()
-						.requestMatchers("/api/patient/get-one").hasAuthority("PATIENT")
+						.requestMatchers("/api/patient/get-one").permitAll()
 						.requestMatchers("/api/patient/update").hasAuthority("PATIENT")
+						.requestMatchers("/api/author/upload/profile-pic/{id}").hasAuthority("RECEPTIONIST")
 						.requestMatchers("/api/patient/get-all").hasAnyAuthority("RECEPTIONIST","DOCTOR")
 						.requestMatchers("/api/patient/specialization/{specialization}").hasAnyAuthority("DOCTOR","RECEPTIONIST")
 						.requestMatchers("/api/patient/date/{date}").hasAnyAuthority("DOCTOR","RECEPTIONIST")
+						.requestMatchers("/api/patient/search/{name}").hasAnyAuthority("DOCTOR","RECEPTIONIST")
+						.requestMatchers("/api/patient/upload/profile-pic/{id}").hasAuthority("RECEPTIONIST")
+						.requestMatchers("/api/patient/upload/profile-pic").hasAuthority("PATIENT")
 						
 						.anyRequest().authenticated())
 				.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)

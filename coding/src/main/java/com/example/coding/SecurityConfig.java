@@ -25,11 +25,12 @@ public class SecurityConfig {
 						.requestMatchers("/api/user/signup").permitAll()
 						.requestMatchers("/api/user/token").authenticated()
 						.requestMatchers("/api/user/details").authenticated()
-						
+						.requestMatchers("/api/doctor/add").permitAll()
 						.requestMatchers("/api/patient/add").permitAll()
 						.requestMatchers("/api/appointment/book/{slotId}").permitAll()
 						.requestMatchers("/api/patient/doctor/{doctorId}").hasAuthority("DOCTOR")
-						.requestMatchers("/api/medical/patient/{patientId}").authenticated()
+//						.requestMatchers("/api/medical/patient/{patientId}").authenticated()
+						.requestMatchers("/api/patient/speciality").permitAll()
 						
 						.anyRequest().authenticated())
 				.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)

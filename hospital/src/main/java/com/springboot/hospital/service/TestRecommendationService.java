@@ -40,9 +40,8 @@ public class TestRecommendationService {
 		return testRepository.save(test);
 	}
 
-	public List<TestRecommendationDto> getbyConsultation(int consultationId) {
-		List<TestRecommendation> list=testRepository.findByConsultationId(consultationId);
-		return testDto.convertTestIntoDto(list);
+	public List<TestRecommendation> getbyConsultation(int consultationId) {
+		return testRepository.findByConsultationId(consultationId);
 	}
 
 	public TestRecommendation updateTest(int testId, TestRecommendation updated, String username) {

@@ -47,4 +47,14 @@ public class DoctorSlotService {
 		return doctorSlotDto.convertSlotIntoDto(list);
 	}
 
+	public void deleteSlotByDoctor(int slotId, String username) {
+		Doctor doctor = doctorRepository.findByUserUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("Doctor not found"));
+
+        DoctorSlot slot = doctorSlotRepository.findById(slotId)
+                .orElseThrow(() -> new ResourceNotFoundException("Slot not found"));
+
+        doctorSlotRepository.deleteById(slotId);
+	}
+
 }

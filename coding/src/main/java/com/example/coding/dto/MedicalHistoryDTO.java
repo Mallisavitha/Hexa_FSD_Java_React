@@ -23,8 +23,8 @@ public class MedicalHistoryDTO {
 	public int getNumOfYear() {
 		return numOfYear;
 	}
-	public void setNumOfYears(int numOfYears) {
-		this.numOfYear = numOfYears;
+	public void setNumOfYear(int numOfYear) {
+		this.numOfYear = numOfYear;
 	}
 	public String getCurrentMedication() {
 		return currentMedication;
@@ -33,17 +33,6 @@ public class MedicalHistoryDTO {
 		this.currentMedication = currentMedication;
 	}
 	
-	public List<MedicalHistoryDTO> convertMedicalHistoryIntoDto(List<MedicalHistory> list) {
-		List<MedicalHistoryDTO> dtoList=new ArrayList<>();
-		for(MedicalHistory history : list) {
-			MedicalHistoryDTO dto=new MedicalHistoryDTO();
-			dto.setIllness(history.getIllness());
-			dto.setNumOfYears(history.getNumOfYear());
-			dto.setCurrentMedication(history.getCurrentMedication());
-			dtoList.add(dto);
-		}
-		return dtoList;
-	}
 	
 	
 	

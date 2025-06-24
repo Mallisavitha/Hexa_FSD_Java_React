@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.example.coding.model.Doctor;
 import com.example.coding.model.MedicalHistory;
 import com.example.coding.model.Patient;
 import com.example.coding.model.User;
@@ -55,5 +56,22 @@ public class PatientService {
 	public List<Patient> getPatientByDoctorId(int doctorId) {
 		return patientRepository.findPatientsByDoctorId(doctorId);
 	}
+	
+	
+	public List<Patient> getPatientBySpeciality(Doctor.Speciality speciality){
+		return patientRepository.getPatientByDoctorSpeciality(speciality);
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
 }

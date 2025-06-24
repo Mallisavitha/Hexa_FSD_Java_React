@@ -7,6 +7,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,6 +22,7 @@ import com.springboot.hospital.service.AppointmentService;
 
 @RestController
 @RequestMapping("/api/appointment")
+@CrossOrigin(origins = "http://localhost:5173")
 public class AppointmentController {
 
 	@Autowired
@@ -63,5 +66,29 @@ public class AppointmentController {
 	public ResponseEntity<?> getAll(){
 		logger.info("Fetching all appointments in the system");
 		return ResponseEntity.status(HttpStatus.OK).body(appointmentService.getAllAppointment());
+	}
+	
+	@GetMapping("/get-one/{id}")
+	public ResponseEntity<?> getOne(@PathVariable int id) {
+	    logger.info("Fetching appointment details for ID: " + id);
+	    return ResponseEntity.status(HttpStatus.OK).body(appointmentService.getById(id));
+	}
+	
+	@GetMapping("/last/{patientId}")
+	public ResponseEntity<?> getLastAppointment(@PathVariable int patientId) {
+	    logger.info("Fetching last appointment for patient ID: " + patientId);
+	    return ResponseEntity.ok(appointmentService.getLastAppointmentByPatientId(patientId));
+	}
+	
+	@GetMapping("/doctor/last/count")
+	public ResponseEntity<?> getAppointmentCountLast7Days(Principal principal){
+		String username=principal.getName();
+		return ResponseEntity.status(HttpStatus.OK).body(appointmentService.getAppointmentCountByDate(username));
+	}
+	
+	@DeleteMapping("/delete/{id}")
+	public ResponseEntity<?> deleteAppointment(@PathVariable int id) {
+	    appointmentService.deleteAppointment(id);
+	    return ResponseEntity.ok().body("Appointment deleted successfully with ID: " + id);
 	}
 }

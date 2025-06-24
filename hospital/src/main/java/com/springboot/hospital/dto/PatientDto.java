@@ -16,6 +16,7 @@ public class PatientDto {
 	private LocalDate dob;
 	private String gender;
 	private String contactNumber;
+	private String profilePic;
 	
 	public int getPatientId() {
 		return patientId;
@@ -47,8 +48,13 @@ public class PatientDto {
 	public void setContactNumber(String contactNumber) {
 		this.contactNumber = contactNumber;
 	}
-	
-	
+		
+	public String getProfilePic() {
+		return profilePic;
+	}
+	public void setProfilePic(String profilePic) {
+		this.profilePic = profilePic;
+	}
 	public List<PatientDto> convertPatientIntoDto(List<Patient> list){
 		List<PatientDto> listDto=new ArrayList<>();
 		list.stream().forEach(patient -> {
@@ -58,6 +64,7 @@ public class PatientDto {
 			dto.setDob(patient.getDob());
 			dto.setGender(patient.getGender());
 			dto.setContactNumber(patient.getContactNumber());
+			dto.setProfilePic(patient.getProfilePic());
 			listDto.add(dto);
 		});
 		return listDto;

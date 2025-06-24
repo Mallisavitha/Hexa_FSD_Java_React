@@ -24,6 +24,7 @@ public class Receptionist {
 	
 	@Column(name="phone")
 	private String phone;
+	private String profilePic;
 	
 	@OneToOne
 	private User user;
@@ -67,6 +68,15 @@ public class Receptionist {
 	public void setUser(User user) {
 		this.user = user;
 	}
+
+	public String getProfilePic() {
+		return profilePic;
+	}
+
+	public void setProfilePic(String profilePic) {
+		this.profilePic = profilePic;
+	}
+	
 	
 	
 	
