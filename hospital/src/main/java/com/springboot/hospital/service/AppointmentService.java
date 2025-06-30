@@ -1,10 +1,16 @@
 package com.springboot.hospital.service;
 
 import java.time.LocalDate;
-import java.util.LinkedHashMap;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.springboot.hospital.dto.AppointmentDto;
@@ -26,6 +32,8 @@ public class AppointmentService {
 	private AppointmentDto appointmentDto;
 	private DoctorRepository doctorRepository;
 	private DoctorSlotRepository doctorSlotRepository;
+	
+	Logger logger = LoggerFactory.getLogger(AppointmentService.class);
 
 	public AppointmentService(AppointmentRepository appointmentRepository, PatientRepository patientRepository,
 			AppointmentDto appointmentDto, DoctorRepository doctorRepository,
@@ -38,41 +46,58 @@ public class AppointmentService {
 		this.doctorSlotRepository = doctorSlotRepository;
 	}
 
-	public Appointment bookAppointment(String username, int slotId, Appointment appointment) {
+	public Appointment bookAppointment(String username, int doctorId, AppointmentDto dto) {
+		// Fetch patient
 		Patient patient = patientRepository.getPatientByUsername(username);
-		DoctorSlot slot = doctorSlotRepository.findById(slotId)
+
+		// Fetch doctor or throw if not found
+		Doctor doctor = doctorRepository.findById(doctorId)
+				.orElseThrow(() -> new ResourceNotFoundException("Doctor not found"));
+
+		// Fetch slot or throw if not found
+		DoctorSlot slot = doctorSlotRepository.findById(dto.getDoctorSlotId())
 				.orElseThrow(() -> new ResourceNotFoundException("Slot not found"));
 
-		if (slot.getBookedCount() >= slot.getMaxAppointment()) {
-			throw new ResourceNotFoundException("Slot is fully booked.");
-		}
-
+		// Create new appointment
+		Appointment appointment = new Appointment();
 		appointment.setPatient(patient);
-		appointment.setDoctor(slot.getDoctor());
-		appointment.setDoctorSlot(slot);
+		appointment.setDoctor(doctor);
+		appointment.setDoctorSlot(slot); //  FIX HERE
 		appointment.setScheduledDate(slot.getDate());
 		appointment.setScheduledTime(slot.getTime());
-		appointment.setStatus(Appointment.Status.SCHEDULED);
+		appointment.setNatureOfVisit(dto.getNatureOfVisit());
+		appointment.setDescription(dto.getDescription());
+		appointment.setStatus(appointment.getStatus().SCHEDULED); // assuming this is an enum
 
+		// Update slot's booked count
 		slot.setBookedCount(slot.getBookedCount() + 1);
 		doctorSlotRepository.save(slot);
 
+		// Save and return appointment
+		logger.info("Appointment booked successfully for patient: {}",patient.getFullName());
 		return appointmentRepository.save(appointment);
 	}
 
-	public List<AppointmentDto> getAppointmentForPatient(String username) {
+
+	public List<AppointmentDto> getUpcomingAppointmentsForPatient(String username) {
+		logger.info("Fetching upcoming appointments for patient username: {}",username);
 		Patient patient = patientRepository.getPatientByUsername(username);
-		List<Appointment> list = appointmentRepository.findByPatient(patient);
-		return appointmentDto.convertAppointmentIntoDto(list);
+		LocalDate today = LocalDate.now();
+		List<Appointment> upcoming = appointmentRepository.findUpcomingAppointments(patient, today);
+		return appointmentDto.convertAppointmentIntoDto(upcoming);
 	}
 
-	public List<AppointmentDto> getAppointmentForDoctor(String username) {
-		Doctor doctor = doctorRepository.getDoctorByUsername(username);
-		List<Appointment> list = appointmentRepository.findByDoctor(doctor);
-		return appointmentDto.convertAppointmentIntoDto(list);
+	public List<AppointmentDto> getPastAppointmentsForPatient(String username, int page, int size) {
+		logger.info("Fetching past appointments for username: {}",username);
+		Patient patient = patientRepository.getPatientByUsername(username);
+		Pageable pageable = PageRequest.of(page, size, Sort.by("scheduledDate").descending());
+		LocalDate today = LocalDate.now();
+		List<Appointment> past = appointmentRepository.findPastAppointments(patient, today, pageable);
+		return appointmentDto.convertAppointmentIntoDto(past);
 	}
 
 	public Appointment rescheduleAppointment(int id, Appointment updated) {
+		logger.info("Rescheuling aappointment for ID: {}",id);
 		Appointment appointment = appointmentRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Appointment not found"));
 
@@ -82,56 +107,95 @@ public class AppointmentService {
 		if (updated.getScheduledTime() != null)
 			appointment.setScheduledTime(updated.getScheduledTime());
 
-		
 		appointment.setStatus(Appointment.Status.RESCHEDULED);
 
 		return appointmentRepository.save(appointment);
 	}
 
 	public List<AppointmentDto> getAllAppointment() {
+		logger.info("Fetching all appointments");
 		List<Appointment> list = appointmentRepository.findAll();
 		return appointmentDto.convertAppointmentIntoDto(list);
 	}
 
 	public AppointmentDto getById(int id) {
+		logger.info("Fetching appointment by ID : {}",id);
 		Appointment appt = appointmentRepository.findById(id)
-		        .orElseThrow(() -> new ResourceNotFoundException("Appointment not found with ID: " + id));
+				.orElseThrow(() -> new ResourceNotFoundException("Appointment not found with ID: " + id));
 
-	    AppointmentDto dto = new AppointmentDto();
-	    dto.setAppointmentId(appt.getAppointmentId());
-	    dto.setScheduledDate(appt.getScheduledDate());
-	    dto.setScheduledTime(appt.getScheduledTime());
-	    dto.setNatureOfVisit(appt.getNatureOfVisit());
-	    dto.setDescription(appt.getDescription());
-	    dto.setStatus(appt.getStatus().name());
-	    dto.setPatientName(appt.getPatient().getFullName()); // assuming mapping exists
+		AppointmentDto dto = new AppointmentDto();
+		dto.setAppointmentId(appt.getAppointmentId());
+		dto.setScheduledDate(appt.getScheduledDate());
+		dto.setScheduledTime(appt.getScheduledTime());
+		dto.setNatureOfVisit(appt.getNatureOfVisit());
+		dto.setDescription(appt.getDescription());
+		dto.setStatus(appt.getStatus().name());
+		dto.setPatientName(appt.getPatient().getFullName()); // assuming mapping exists
 
-	    return dto;
+		return dto;
 	}
-
-	public Appointment getLastAppointmentByPatientId(int patientId) {
-	    return appointmentRepository.findLastAppointmentByPatientId(patientId)
-	           .orElseThrow(() -> new RuntimeException("No appointments found for patient"));
-	}
-
-	public Map<LocalDate, Long> getAppointmentCountByDate(String username) {
-		LocalDate startDate=LocalDate.now().minusDays(6); //7 days including today
-		List<Object[]> results=appointmentRepository.countAppointmentByDate(username, startDate);
-		Map<LocalDate, Long> countMap =new LinkedHashMap<>();
-		for(Object[] row : results) {
-			LocalDate date=(LocalDate) row[0];
-			Long count=(Long) row[1];
-			countMap.put(date, count);
-			}
-		return countMap;
-		}
-		
 
 	public void deleteAppointment(int id) {
-	    Appointment appointment = appointmentRepository.findById(id)
-	            .orElseThrow(() -> new ResourceNotFoundException("Appointment not found with ID: " + id));
-	    appointmentRepository.delete(appointment);
+		logger.info("This appointment is deleting ID: {}",id);
+		Appointment appointment = appointmentRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Appointment not found with ID: " + id));
+		appointmentRepository.delete(appointment);
+
 	}
-	
+
+	public List<Map<String, Object>> getLast7DaysAppointments() {
+		logger.info("Fetching appointment counts for 7 days");
+		LocalDate endDate = LocalDate.now();
+		LocalDate startDate = endDate.minusDays(6); // Last 7 days including today
+
+		List<Object[]> results = appointmentRepository.findAppointmentCountsByDateRange(startDate, endDate);
+
+		// Create a map from scheduledDate to count
+		Map<LocalDate, Long> countMap = new HashMap<>();
+		for (Object[] row : results) {
+			LocalDate date = (LocalDate) row[0];
+			Long count = (Long) row[1];
+			countMap.put(date, count);
+		}
+
+		// Fill in all 7 days (even with 0 if missing)
+		List<Map<String, Object>> response = new ArrayList<>();
+		for (int i = 0; i < 7; i++) {
+			LocalDate date = startDate.plusDays(i); // each day from start to end
+			Map<String, Object> entry = new HashMap<>();
+			entry.put("date", date.toString()); // convert date to string
+			entry.put("count", countMap.getOrDefault(date, 0L)); // get count or 0
+			response.add(entry);
+		}
+
+		return response;
+	}
+
+	public List<AppointmentDto> getAppointmentsByDate(String username, LocalDate date) {
+		logger.info("Fetching appointment for this date: {}",date);
+		List<Appointment> list = appointmentRepository.findByPatientUsernameAndDate(username, date);
+		return appointmentDto.convertAppointmentIntoDto(list);
+	}
+
+	public List<AppointmentDto> getTodayAppointmentsForDoctor(String username) {
+		logger.info("Fetching todays appointments for doctor: {}",username);
+		Doctor doctor = doctorRepository.getDoctorByUsername(username);
+		List<Appointment> list = appointmentRepository.findTodayAppointments(LocalDate.now(), doctor);
+		return appointmentDto.convertAppointmentIntoDto(list);
+	}
+
+	public List<AppointmentDto> getUpcomingAppointmentsForDoctor(String username) {
+		logger.info("Fetching upcoming appointments for doctor: {}",username);
+		Doctor doctor = doctorRepository.getDoctorByUsername(username);
+		List<Appointment> list = appointmentRepository.findUpcomingAppointments(LocalDate.now(), doctor);
+		return appointmentDto.convertAppointmentIntoDto(list);
+	}
+
+	public List<AppointmentDto> getPastAppointmentsForDoctor(String username) {
+		logger.info("Fetching past appointments for dotor: {}",username);
+		Doctor doctor = doctorRepository.getDoctorByUsername(username);
+		List<Appointment> list = appointmentRepository.findPastAppointments(LocalDate.now(), doctor);
+		return appointmentDto.convertAppointmentIntoDto(list);
+	}
 
 }

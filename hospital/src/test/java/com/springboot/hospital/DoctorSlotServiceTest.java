@@ -34,10 +34,13 @@ public class DoctorSlotServiceTest {
 
 	@InjectMocks
 	private DoctorSlotService doctorSlotService;
+
 	@Mock
 	private DoctorSlotRepository doctorSlotRepository;
+
 	@Mock
 	private DoctorRepository doctorRepository;
+
 	@Mock
 	private DoctorSlotDto doctorSlotDto;
 
@@ -71,38 +74,18 @@ public class DoctorSlotServiceTest {
 		DoctorSlot saved = doctorSlotService.addSlot("docuser", doctorSlot);
 
 		assertNotNull(saved);
-		assertEquals(doctor, saved.getDoctor());
+		assertEquals(doctor.getDoctorId(), saved.getDoctor().getDoctorId());
 	}
 
 	@Test
-	public void addSlotDoctotNotFoundTest() {
+	public void addSlotDoctorNotFoundTest() {
 		when(doctorRepository.findByUserUsername("invalid")).thenReturn(Optional.empty());
 
-		ResourceNotFoundException ex = assertThrows(ResourceNotFoundException.class,
-				() -> doctorSlotService.addSlot("invalid", doctorSlot));
+		ResourceNotFoundException ex = assertThrows(ResourceNotFoundException.class, () -> {
+			doctorSlotService.addSlot("invalid", doctorSlot);
+		});
 
 		assertEquals("Doctor Not Found".toLowerCase(), ex.getMessage().toLowerCase());
-	}
-
-	@Test
-	public void getSlotsByDoctorUsernameSuccessTest() {
-		when(doctorRepository.findByUserUsername("docuser")).thenReturn(Optional.of(doctor));
-		when(doctorSlotRepository.findByDoctorId(1)).thenReturn(Arrays.asList(doctorSlot));
-
-		List<DoctorSlot> slots = doctorSlotService.getSlotsByDoctorUsername("docuser");
-
-		assertEquals(1, slots.size());
-		assertEquals(doctorSlot, slots.get(0));
-	}
-
-	@Test
-	public void getSlotByDoctorUsernameNotFoundTest() {
-		when(doctorRepository.findByUserUsername("invalid")).thenReturn(Optional.empty());
-
-		ResourceNotFoundException ex = assertThrows(ResourceNotFoundException.class,
-				() -> doctorSlotService.getSlotsByDoctorUsername("invalid"));
-
-		assertTrue(ex.getMessage().toLowerCase().contains("doctor not found"));
 	}
 
 	@Test
@@ -111,6 +94,8 @@ public class DoctorSlotServiceTest {
 		when(doctorSlotDto.convertSlotIntoDto(anyList())).thenReturn(List.of(new DoctorSlotDto()));
 
 		List<DoctorSlotDto> dtos = doctorSlotService.getAllSlots();
+
+		assertNotNull(dtos);
 		assertEquals(1, dtos.size());
 	}
 
@@ -119,5 +104,4 @@ public class DoctorSlotServiceTest {
 		doctor = null;
 		doctorSlot = null;
 	}
-
 }

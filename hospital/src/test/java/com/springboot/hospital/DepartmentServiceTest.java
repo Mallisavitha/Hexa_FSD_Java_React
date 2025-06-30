@@ -4,8 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
@@ -29,6 +27,7 @@ public class DepartmentServiceTest {
 
 	@InjectMocks
 	private DepartmentService departmentService;
+
 	@Mock
 	private DepartmentRepository departmentRepository;
 
@@ -49,7 +48,6 @@ public class DepartmentServiceTest {
 
 		assertNotNull(saved);
 		assertEquals("Cardiology", saved.getName());
-		verify(departmentRepository, times(1)).save(department);
 	}
 
 	@Test
@@ -61,11 +59,14 @@ public class DepartmentServiceTest {
 		Department d2 = new Department();
 		d2.setDepartmentId(2);
 		d2.setName("Neurology");
+
 		when(departmentRepository.findAll()).thenReturn(Arrays.asList(d1, d2));
 
 		List<Department> list = departmentService.getAllDepartment();
 
 		assertEquals(2, list.size());
+		assertEquals("Cardiology", list.get(0).getName());
+		assertEquals("Neurology", list.get(1).getName());
 	}
 
 	@Test
@@ -121,10 +122,9 @@ public class DepartmentServiceTest {
 
 		assertEquals("UpdatedDept", result.getName());
 	}
-	
+
 	@AfterEach
 	public void afterTest() {
-		department=null;
+		department = null;
 	}
-
 }

@@ -52,11 +52,10 @@ public class PatientController {
 
 	// GET: GetPatient by ID
 	@GetMapping("/get-one")
-	public Patient getPatientById(@PathVariable int id) {
-
-		//Ask spring username of loggedIn user using Principal interface
-		
-		return patientService.getPatientById(id);
+	public Patient getPatientById(Principal principal) {
+		String username = principal.getName();
+		logger.info("Doctor is requesting their own profile");
+		return patientService.getPatientByUsername(username);
 	}
 
 	// PUT:Update Patient by using id

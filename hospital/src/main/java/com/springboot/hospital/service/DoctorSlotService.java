@@ -1,5 +1,7 @@
 package com.springboot.hospital.service;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -13,7 +15,7 @@ import com.springboot.hospital.repository.DoctorSlotRepository;
 
 @Service
 public class DoctorSlotService {
-	
+
 	private DoctorSlotRepository doctorSlotRepository;
 	private DoctorRepository doctorRepository;
 	private DoctorSlotDto doctorSlotDto;
@@ -27,34 +29,41 @@ public class DoctorSlotService {
 	}
 
 	public DoctorSlot addSlot(String username, DoctorSlot slot) {
-		Doctor doctor=doctorRepository.findByUserUsername(username).orElseThrow(() -> new ResourceNotFoundException("Doctor Not Found"));
+		Doctor doctor = doctorRepository.findByUserUsername(username)
+				.orElseThrow(() -> new ResourceNotFoundException("Doctor Not Found"));
 		slot.setDoctor(doctor);
 		return doctorSlotRepository.save(slot);
 	}
 
 	public List<DoctorSlot> getSlotsByDoctorUsername(String username) {
-		Doctor doctor = doctorRepository.findByUserUsername(username).orElseThrow(() -> new ResourceNotFoundException("Doctor not found"));
-		return doctorSlotRepository.findByDoctorId(doctor.getDoctorId());
+	    return doctorSlotRepository.findSlotsByDoctorUsername(username);
 	}
 
 	public List<DoctorSlotDto> getAllSlots() {
-		List<DoctorSlot> list=doctorSlotRepository.findAll();
+		List<DoctorSlot> list = doctorSlotRepository.findAll();
 		return doctorSlotDto.convertSlotIntoDto(list);
 	}
 
 	public List<DoctorSlotDto> getSlotByDoctorName(String name) {
-		List<DoctorSlot> list=doctorSlotRepository.getSlotByDoctorName(name);
+		List<DoctorSlot> list = doctorSlotRepository.getSlotByDoctorName(name);
 		return doctorSlotDto.convertSlotIntoDto(list);
 	}
 
 	public void deleteSlotByDoctor(int slotId, String username) {
 		Doctor doctor = doctorRepository.findByUserUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("Doctor not found"));
+				.orElseThrow(() -> new ResourceNotFoundException("Doctor not found"));
 
-        DoctorSlot slot = doctorSlotRepository.findById(slotId)
-                .orElseThrow(() -> new ResourceNotFoundException("Slot not found"));
+		DoctorSlot slot = doctorSlotRepository.findById(slotId)
+				.orElseThrow(() -> new ResourceNotFoundException("Slot not found"));
 
-        doctorSlotRepository.deleteById(slotId);
+		doctorSlotRepository.deleteById(slotId);
+	}
+
+	public List<DoctorSlot> getAvailableSlots(int doctorId) {
+		Doctor doctor=doctorRepository.findById(doctorId).orElseThrow(() -> new ResourceNotFoundException("Doctor Not Foun"));
+		LocalDate today = LocalDate.now();
+		LocalTime now = LocalTime.now();
+		return doctorSlotRepository.getAvailableSlotsByDoctor(doctorId, today, now);
 	}
 
 }

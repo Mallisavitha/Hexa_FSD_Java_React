@@ -2,110 +2,122 @@ package com.springboot.hospital;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.verify;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import com.springboot.hospital.dto.PatientDto;
+import com.springboot.hospital.model.User;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import com.springboot.hospital.dto.PatientDto;
+import com.springboot.hospital.exception.ResourceNotFoundException;
 import com.springboot.hospital.model.Patient;
-import com.springboot.hospital.model.User;
 import com.springboot.hospital.repository.PatientRepository;
+import com.springboot.hospital.repository.UserRepository;
 import com.springboot.hospital.service.PatientService;
 import com.springboot.hospital.service.UserService;
 
 @SpringBootTest
-class PatientServiceTest {
+public class PatientServiceTest {
 
-	@InjectMocks
-	private PatientService patientService;
-	@Mock
-	private PatientRepository patientRepository;
-	@Mock
-	private UserService userService;
+    @InjectMocks
+    private PatientService patientService;
 
-	private Patient patient;
-	private User user;
+    @Mock
+    private UserRepository userRepository;
 
-	@BeforeEach
-	public void init() {
-		user = new User();
-		user.setUsername("john123");
-		user.setPassword("secret");
+    @Mock
+    private PatientRepository patientRepository;
 
-		patient = new Patient();
-		patient.setPatientId(1);
-		patient.setFullName("John Doe");
-		patient.setDob(LocalDate.of(2000, 1, 1));
-		patient.setGender("Male");
-		patient.setContactNumber("9876543210");
-		patient.setUser(user);
+    @Mock
+    private UserService userService;
 
-		System.out.println("Patient object created: " + patient);
-	}
+    @Mock
+    private PatientDto patientDto;
 
-	@Test
-	public void insertPatientTest() {
-		when(userService.signUp(user)).thenReturn(user);
-		when(patientRepository.save(patient)).thenReturn(patient);
+    private Patient patient;
+    private User user;
 
-		Patient saved = patientService.insertPatient(patient);
-		assertNotNull(saved);
-		verify(userService).signUp(user);
-		verify(patientRepository).save(patient);
-	}
+    @BeforeEach
+    public void setup() {
+        user = new User();
+        user.setUsername("john123");
+        user.setPassword("password");
+        user.setRole("PATIENT");
 
-	@Test
-	public void getAllPatientTest() {
-		List<Patient> list = List.of(patient);
+        patient = new Patient();
+        patient.setPatientId(1);
+        patient.setFullName("John Doe");
+        patient.setDob(LocalDate.of(1990, 5, 20));
+        patient.setGender("Male");
+        patient.setContactNumber("9876543210");
+        patient.setUser(user);
+    }
 
-		when(patientRepository.findAll()).thenReturn(list);
+    @Test
+    public void testInsertPatient_Success() {
+        when(userService.signUp(user)).thenReturn(user);
+        when(patientRepository.save(patient)).thenReturn(patient);
 
-		List<PatientDto> result = patientService.getAllPatient();
+        Patient result = patientService.insertPatient(patient);
+        assertNotNull(result);
+        assertEquals("John Doe", result.getFullName());
+        assertEquals("PATIENT", result.getUser().getRole());
+    }
 
-		assertEquals(1, result.size());
-		assertEquals(patient.getFullName(), result.get(0).getFullName());
+    @Test
+    public void testGetPatientById_Success() {
+        when(patientRepository.findById(1)).thenReturn(Optional.of(patient));
+        Patient result = patientService.getPatientById(1);
+        assertEquals("John Doe", result.getFullName());
+    }
 
-		verify(patientRepository).findAll();
-	}
+    @Test
+    public void testGetPatientById_NotFound() {
+        when(patientRepository.findById(2)).thenReturn(Optional.empty());
 
-	@Test
-	public void getPatientByIdTest() {
-		when(patientRepository.findById(1)).thenReturn(Optional.of(patient));
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
+            patientService.getPatientById(2);
+        });
 
-		Patient found = patientService.getPatientById(1);
-		assertEquals("John Doe", found.getFullName());
-	}
+        assertEquals("Patient ID Not Found 2", exception.getMessage());
+    }
 
-	@Test
-	public void updatePatientTest() {
-		Patient updated = new Patient();
-		updated.setFullName("Jane");
-		updated.setContactNumber("9638527485");
+    @Test
+    public void testUpdatePatient_Success() {
+        when(patientRepository.getPatientByUsername("john123")).thenReturn(patient);
+        Patient update = new Patient();
+        update.setFullName("Updated Name");
+        update.setDob(LocalDate.of(1991, 1, 1));
+        update.setGender("Male");
+        update.setContactNumber("9999999999");
 
-		when(patientRepository.getPatientByUsername("john123")).thenReturn(patient);
-		when(patientRepository.save(patient)).thenReturn(patient);
+        when(patientRepository.save(patient)).thenReturn(patient);
 
-		Patient result = patientService.updatePatient("john123", updated);
+        Patient updated = patientService.updatePatient("john123", update);
+        assertEquals("Updated Name", updated.getFullName());
+        assertEquals("9999999999", updated.getContactNumber());
+    }
 
-		assertEquals("Jane", result.getFullName());
-		assertEquals("9638527485", result.getContactNumber());
-	}
+    @Test
+    public void testDeletePatient_Success() {
+        when(patientRepository.getPatientByUsername("john123")).thenReturn(patient);
+        // No exception means success
+        patientService.deletePatient("john123");
+    }
 
-	@AfterEach
-	public void afterTest() {
-		patient = null;
-		user = null;
-		System.out.println("Objects released.");
-	}
-
+    @AfterEach
+    public void teardown() {
+        patient = null;
+        user = null;
+    }
 }

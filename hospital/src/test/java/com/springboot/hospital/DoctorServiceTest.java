@@ -1,178 +1,160 @@
-//package com.springboot.hospital;
-//
-//import static org.junit.jupiter.api.Assertions.assertEquals;
-//import static org.junit.jupiter.api.Assertions.assertNotNull;
-//import static org.junit.jupiter.api.Assertions.assertThrows;
-//import static org.junit.jupiter.api.Assertions.assertTrue;
-//import static org.mockito.ArgumentMatchers.any;
-//import static org.mockito.Mockito.verify;
-//import static org.mockito.Mockito.when;
-//
-//import java.util.List;
-//import java.util.Optional;
-//
-//import org.junit.jupiter.api.AfterEach;
-//import org.junit.jupiter.api.BeforeEach;
-//import org.junit.jupiter.api.Test;
-//import org.mockito.InjectMocks;
-//import org.mockito.Mock;
-//import org.springframework.boot.test.context.SpringBootTest;
-//import org.springframework.data.domain.Page;
-//import org.springframework.data.domain.PageImpl;
-//import org.springframework.data.domain.Pageable;
-//
-//import com.springboot.hospital.dto.DoctorDto;
-//import com.springboot.hospital.exception.ResourceNotFoundException;
-//import com.springboot.hospital.model.Department;
-//import com.springboot.hospital.model.Doctor;
-//import com.springboot.hospital.model.Receptionist;
-//import com.springboot.hospital.model.User;
-//import com.springboot.hospital.repository.DepartmentRepository;
-//import com.springboot.hospital.repository.DoctorRepository;
-//import com.springboot.hospital.repository.ReceptionistRepository;
-//import com.springboot.hospital.service.DoctorService;
-//import com.springboot.hospital.service.UserService;
-//
-//@SpringBootTest
-//public class DoctorServiceTest {
-//
-//	@InjectMocks
-//	private DoctorService doctorService;
-//	@Mock
-//	private DoctorRepository doctorRepository;
-//	@Mock
-//	private DepartmentRepository departmentRepository;
-//	@Mock
-//	private ReceptionistRepository receptionistRepository;
-//	@Mock
-//	private UserService userService;
-//	@Mock
-//	private DoctorDto doctorDto;
-//
-//	private Doctor doctor;
-//	private DoctorDto dto;
-//	private User user;
-//	private Department department;
-//	private Receptionist receptionist;
-//
-//	@BeforeEach
-//	public void init() {
-//		user = new User();
-//		user.setUsername("john");
-//		user.setPassword("john@123");
-//
-//		receptionist = new Receptionist();
-//		receptionist.setAdminId(10);
-//
-//		department = new Department();
-//		department.setDepartmentId(0);
-//		department.setName("Cardiology");
-//
-//		doctor = new Doctor();
-//		doctor.setDoctorId(1);
-//		doctor.setFullName("John");
-//		doctor.setSpecialization("Cardiology");
-//		doctor.setExperienceYear(10);
-//		doctor.setUser(user);
-//		doctor.setDepartment(department);
-//		doctor.setReceptionist(receptionist);
-//
-//		System.out.println("Doctor object created: " + doctor);
-//
-//	}
-//
-//	@Test
-//	public void insertDoctorTest() {
-//		when(userService.signUp(user)).thenReturn(user);
-//		when(departmentRepository.findById(5)).thenReturn(Optional.of(department));
-//		when(receptionistRepository.getReceptionistByUsername("recept1")).thenReturn(receptionist);
-//		when(doctorRepository.save(any())).thenReturn(doctor);
-//
-//		Doctor saved = doctorService.insertDoctor(5, doctor, "recept1");
-//
-//		assertNotNull(saved);
-//		assertEquals("John", saved.getFullName());
-//		verify(userService).signUp(user);
-//		verify(doctorRepository).save(any());
-//	}
-//
-//	@Test
-//	public void getAllDoctorTest() {
-//		List<Doctor> doctorList = List.of(doctor);
-//		Page<Doctor> doctorPage = new PageImpl<>(doctorList);
-//
-//		when(doctorRepository.findAll(any(Pageable.class))).thenReturn(doctorPage);
-//		when(doctorDto.convertDoctorIntoDto(doctorList)).thenReturn(List.of(dto));
-//
-//		List<?> result = doctorService.getAllDoctors(0, 5);
-//
-//		assertEquals(1, result.size());
-//		verify(doctorRepository).findAll(any(Pageable.class));
-//		verify(doctorDto).convertDoctorIntoDto(doctorList);
-//	}
-//
-//	@Test
-//	public void getDoctorByIdTest() {
-//		when(doctorRepository.findById(1)).thenReturn(Optional.of(doctor));
-//		Doctor found = doctorService.getDoctorById(1);
-//		assertEquals("John", found.getFullName());
-//	}
-//
-//	@Test
-//	public void getDoctorByIdInvalidTest() {
-//		when(doctorRepository.findById(999)).thenReturn(Optional.empty());
-//
-//		assertThrows(ResourceNotFoundException.class, () -> {
-//			doctorService.getDoctorById(999);
-//		});
-//	}
-//
-//	public void updateDoctorTest() {
-//		Doctor updated = new Doctor();
-//		updated.setFullName("Jane");
-//		updated.setExperienceYear(15);
-//
-//		when(doctorRepository.getDoctorByUsername("john")).thenReturn(doctor);
-//		when(doctorRepository.save(doctor)).thenReturn(doctor);
-//
-//		Doctor result = doctorService.updateDoctor("john", updated);
-//		assertEquals("Jane", result.getFullName());
-//		assertEquals(15, result.getExperienceYear());
-//	}
-//
-//	@Test
-//	public void getBySpecializationTest() {
-//		List<Doctor> doctors = List.of(doctor);
-//
-//		when(doctorRepository.getBySpecialization("Cardiology")).thenReturn(doctors);
-//		when(doctorDto.convertDoctorIntoDto(doctors)).thenReturn(List.of(dto));
-//
-//		List<DoctorDto> result = doctorService.getBySpecialization("Cardiology");
-//
-//		assertEquals(1, result.size());
-//		assertEquals("Cardiology", result.get(0).getSpecialization());
-//	}
-//
-//	@Test
-//	public void searchByNameTest() {
-//		List<Doctor> doctors = List.of(doctor);
-//
-//		when(doctorRepository.searchByName("John")).thenReturn(doctors);
-//		when(doctorDto.convertDoctorIntoDto(doctors)).thenReturn(List.of(dto));
-//
-//		List<DoctorDto> result = doctorService.searchByName("John");
-//
-//		assertEquals(1, result.size());
-//		assertTrue(result.get(0).getFullName().contains("John"));
-//	}
-//
-//	@AfterEach
-//	public void afterTest() {
-//		doctor = null;
-//		user = null;
-//		department = null;
-//		receptionist = null;
-//		System.out.println("Objects cleaned");
-//	}
-//
-//}
+package com.springboot.hospital;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+
+import com.springboot.hospital.dto.DoctorDto;
+import com.springboot.hospital.model.*;
+import com.springboot.hospital.repository.*;
+import com.springboot.hospital.service.DoctorService;
+import com.springboot.hospital.service.UserService;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+
+@SpringBootTest
+class DoctorServiceTest {
+
+    @InjectMocks
+    private DoctorService doctorService;
+
+    @Mock
+    private DoctorRepository doctorRepository;
+    @Mock
+    private DepartmentRepository departmentRepository;
+    @Mock
+    private ReceptionistRepository receptionistRepository;
+    @Mock
+    private UserRepository userRepository;
+    @Mock
+    private DoctorSlotRepository doctorSlotRepository;
+    @Mock
+    private UserService userService;
+    @Mock
+    private DoctorDto doctorDto;
+
+    private Doctor doctor;
+    private User user;
+    private Department department;
+
+    @BeforeEach
+    void setUp() {
+        user = new User();
+        user.setUsername("drjohn");
+
+        department = new Department();
+        department.setDepartmentId(1);
+        department.setName("Cardiology");
+
+        doctor = new Doctor();
+        doctor.setDoctorId(1);
+        doctor.setFullName("Dr. John");
+        doctor.setUser(user);
+        doctor.setDepartment(department);
+        doctor.setSpecialization("Cardiology");
+    }
+
+    @Test
+    void insertDoctor_Valid() {
+        when(departmentRepository.findById(1)).thenReturn(Optional.of(department));
+        when(userService.signUp(user)).thenReturn(user);
+        when(doctorRepository.save(doctor)).thenReturn(doctor);
+
+        Doctor saved = doctorService.insertDoctor(1, doctor, "admin");
+
+        assertNotNull(saved);
+        assertEquals("Dr. John", saved.getFullName());
+        assertEquals("admin", saved.getAddedBy());
+    }
+
+    @Test
+    void getDoctorById_Valid() {
+        when(doctorRepository.findById(1)).thenReturn(Optional.of(doctor));
+        Doctor fetched = doctorService.getDoctorById(1);
+        assertEquals("Dr. John", fetched.getFullName());
+    }
+
+    @Test
+    void getAllDoctors_Valid() {
+        List<Doctor> list = List.of(doctor);
+        List<DoctorDto> dtoList = List.of(new DoctorDto());
+
+        Page<Doctor> page = new PageImpl<>(list);
+        when(doctorRepository.findAll(PageRequest.of(0, 10))).thenReturn(page);
+        when(doctorDto.convertDoctorIntoDto(list)).thenReturn(dtoList);
+
+        List<?> result = doctorService.getAllDoctors(0, 10);
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    void updateDoctor_Valid() {
+        when(doctorRepository.getDoctorByUsername("drjohn")).thenReturn(doctor);
+
+        Doctor updated = new Doctor();
+        updated.setFullName("Dr. John M.D.");
+        updated.setSpecialization("Cardiology");
+        updated.setExperienceYear(10);
+        updated.setQualification("MD");
+        updated.setDesignation("Senior Consultant");
+        updated.setContact("1234567890");
+
+        when(doctorRepository.save(doctor)).thenReturn(doctor);
+
+        Doctor result = doctorService.updateDoctor("drjohn", updated);
+        assertEquals("Dr. John M.D.", result.getFullName());
+        assertEquals(10, result.getExperienceYear());
+    }
+
+    @Test
+    void getDoctorByUsername_Test() {
+        when(doctorRepository.getDoctorByUsername("drjohn")).thenReturn(doctor);
+        Doctor result = doctorService.getDoctorByUsername("drjohn");
+        assertEquals("Dr. John", result.getFullName());
+    }
+
+    @Test
+    void getBySpecialization_Test() {
+        List<Doctor> list = List.of(doctor);
+        List<DoctorDto> dtoList = List.of(new DoctorDto());
+
+        when(doctorRepository.getBySpecialization("Cardiology")).thenReturn(list);
+        when(doctorDto.convertDoctorIntoDto(list)).thenReturn(dtoList);
+
+        List<DoctorDto> result = doctorService.getBySpecialization("Cardiology");
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    void getDoctorByName_Test() {
+        when(doctorRepository.getDoctorByName("John")).thenReturn(List.of(doctor));
+        List<Doctor> result = doctorService.getDoctorByName("John");
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    void getAllSpecializations_Test() {
+        List<String> specs = List.of("Cardiology", "Neurology");
+        when(doctorRepository.findAllDistinctSpecializations()).thenReturn(specs);
+        List<String> result = doctorService.getAllSpecializations();
+        assertEquals(2, result.size());
+    }
+
+    @AfterEach
+    void tearDown() {
+        doctor = null;
+        user = null;
+        department = null;
+    }
+}

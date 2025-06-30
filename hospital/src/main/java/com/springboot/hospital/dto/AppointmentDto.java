@@ -19,12 +19,21 @@ public class AppointmentDto {
 	private String natureOfVisit;
 	private String description;
 	private String status;
+	private int doctorSlotId;
 	
 	private String patientName;
 	private String contactNumber;
 	private String doctorName;
 	private String specialization;
 	
+	public int getDoctorSlotId() {
+		return doctorSlotId;
+	}
+
+	public void setDoctorSlotId(int doctorSlotId) {
+		this.doctorSlotId = doctorSlotId;
+	}
+
 	public String getContactNumber() {
 		return contactNumber;
 	}
@@ -105,24 +114,33 @@ public class AppointmentDto {
 		this.doctorName = doctorName;
 	}
 	
-	public List<AppointmentDto> convertAppointmentIntoDto(List<Appointment> list){
-		List<AppointmentDto> listDto=new ArrayList<>();
-		list.stream().forEach(appointment -> {
-			AppointmentDto dto=new AppointmentDto();
-			dto.setAppointmentId(appointment.getAppointmentId());
-			dto.setScheduledDate(appointment.getScheduledDate());
-			dto.setScheduledTime(appointment.getScheduledTime());
-			dto.setNatureOfVisit(appointment.getNatureOfVisit());
-			dto.setDescription(appointment.getDescription());
-			dto.setStatus(appointment.getStatus().name());
-			dto.setPatientName(appointment.getPatient().getFullName());
-			dto.setDoctorName(appointment.getDoctor().getFullName());
-			dto.setContactNumber(appointment.getPatient().getContactNumber());
-			dto.setSpecialization(appointment.getDoctor().getSpecialization());
-			listDto.add(dto);
-		});
-		return listDto;
+	public List<AppointmentDto> convertAppointmentIntoDto(List<Appointment> list) {
+	    List<AppointmentDto> listDto = new ArrayList<>();
+	    list.forEach(appointment -> {
+	        AppointmentDto dto = new AppointmentDto();
+	        dto.setAppointmentId(appointment.getAppointmentId());
+	        dto.setScheduledDate(appointment.getScheduledDate());
+	        dto.setScheduledTime(appointment.getScheduledTime());
+	        dto.setNatureOfVisit(appointment.getNatureOfVisit());
+	        dto.setDescription(appointment.getDescription());
+	        dto.setStatus(appointment.getStatus().name());
+	        dto.setPatientName(appointment.getPatient().getFullName());
+	        dto.setDoctorName(appointment.getDoctor().getFullName());
+	        dto.setContactNumber(appointment.getPatient().getContactNumber());
+	        dto.setSpecialization(appointment.getDoctor().getSpecialization());
+
+	        // Fix here: Null check for doctorSlot
+	        if (appointment.getDoctorSlot() != null) {
+	            dto.setDoctorSlotId(appointment.getDoctorSlot().getSlotId());
+	        } else {
+	            dto.setDoctorSlotId(0); // or throw/log if this is unexpected
+	        }
+
+	        listDto.add(dto);
+	    });
+	    return listDto;
 	}
+
 	
 	
 

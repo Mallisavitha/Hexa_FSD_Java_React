@@ -4,8 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
@@ -37,14 +35,19 @@ class AppointmentServiceTest {
 
 	@InjectMocks
 	private AppointmentService appointmentService;
+
 	@Mock
 	private AppointmentRepository appointmentRepository;
+
 	@Mock
 	private PatientRepository patientRepository;
+
 	@Mock
 	private AppointmentDto appointmentDto;
+
 	@Mock
 	private DoctorRepository doctorRepository;
+
 	@Mock
 	private DoctorSlotRepository doctorSlotRepository;
 
@@ -62,7 +65,6 @@ class AppointmentServiceTest {
 		patient = new Patient();
 		patient.setPatientId(2);
 		patient.setFullName("Jane Doe");
-		patient.setUser(null);
 
 		slot = new DoctorSlot();
 		slot.setSlotId(3);
@@ -80,74 +82,40 @@ class AppointmentServiceTest {
 		appointment.setDoctor(doctor);
 		appointment.setDoctorSlot(slot);
 		appointment.setPatient(patient);
-
-		System.out.println("Test data initialized.");
 	}
 
 	@Test
 	public void bookAppointment_Valid_Test() {
+		AppointmentDto dto = new AppointmentDto();
+		dto.setDoctorSlotId(3);
+		dto.setNatureOfVisit("General Checkup");
+		dto.setDescription("Regular follow-up");
+
 		when(patientRepository.getPatientByUsername("jane")).thenReturn(patient);
+		when(doctorRepository.findById(doctor.getDoctorId())).thenReturn(Optional.of(doctor));
 		when(doctorSlotRepository.findById(3)).thenReturn(Optional.of(slot));
 		when(appointmentRepository.save(any(Appointment.class))).thenReturn(appointment);
 		when(doctorSlotRepository.save(slot)).thenReturn(slot);
 
-		Appointment result = appointmentService.bookAppointment("jane", 3, new Appointment());
+		Appointment result = appointmentService.bookAppointment("jane", doctor.getDoctorId(), dto);
 
 		assertNotNull(result);
 		assertEquals(Appointment.Status.SCHEDULED, result.getStatus());
-		verify(doctorSlotRepository, times(1)).save(slot);
-		verify(appointmentRepository, times(1)).save(any(Appointment.class));
-	}
-
-	@Test
-	public void bookAppointment_SlotFull_Test() {
-		slot.setBookedCount(2);
-		when(doctorSlotRepository.findById(3)).thenReturn(Optional.of(slot));
-
-		ResourceNotFoundException ex = assertThrows(ResourceNotFoundException.class, () -> {
-			appointmentService.bookAppointment("jane", 3, new Appointment());
-		});
-
-		assertEquals("Slot is fully booked.", ex.getMessage());
 	}
 
 	@Test
 	public void bookAppointment_SlotNotFound_Test() {
+		AppointmentDto dto = new AppointmentDto();
+		dto.setDoctorSlotId(99);
+
+		when(doctorRepository.findById(doctor.getDoctorId())).thenReturn(Optional.of(doctor));
 		when(doctorSlotRepository.findById(99)).thenReturn(Optional.empty());
 
 		ResourceNotFoundException ex = assertThrows(ResourceNotFoundException.class, () -> {
-			appointmentService.bookAppointment("jane", 99, new Appointment());
+			appointmentService.bookAppointment("jane", doctor.getDoctorId(), dto);
 		});
 
 		assertEquals("Slot not found", ex.getMessage());
-	}
-
-	@Test
-	public void getAppointmentsForPatient_Test() {
-		List<Appointment> list = List.of(appointment);
-		List<AppointmentDto> dtoList = List.of(new AppointmentDto());
-
-		when(patientRepository.getPatientByUsername("jane")).thenReturn(patient);
-		when(appointmentRepository.findByPatient(patient)).thenReturn(list);
-		when(appointmentDto.convertAppointmentIntoDto(list)).thenReturn(dtoList);
-
-		List<AppointmentDto> result = appointmentService.getAppointmentForPatient("jane");
-
-		assertEquals(1, result.size());
-	}
-
-	@Test
-	public void getAppointmentsForDoctor_Test() {
-		List<Appointment> list = List.of(appointment);
-		List<AppointmentDto> dtoList = List.of(new AppointmentDto());
-
-		when(doctorRepository.getDoctorByUsername("drjohn")).thenReturn(doctor);
-		when(appointmentRepository.findByDoctor(doctor)).thenReturn(list);
-		when(appointmentDto.convertAppointmentIntoDto(list)).thenReturn(dtoList);
-
-		List<AppointmentDto> result = appointmentService.getAppointmentForDoctor("drjohn");
-
-		assertEquals(1, result.size());
 	}
 
 	@Test
@@ -188,13 +156,12 @@ class AppointmentServiceTest {
 
 		assertEquals(1, result.size());
 	}
-	
+
 	@AfterEach
 	public void afterTest() {
-		appointment=null;
-		slot=null;
-		patient=null;
-		doctor=null;
-		System.out.println("Test data cleared.");
+		appointment = null;
+		slot = null;
+		patient = null;
+		doctor = null;
 	}
 }

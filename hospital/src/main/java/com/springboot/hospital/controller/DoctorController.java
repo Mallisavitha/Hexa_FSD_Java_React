@@ -2,6 +2,7 @@ package com.springboot.hospital.controller;
 
 import java.io.IOException;
 import java.security.Principal;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -23,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.springboot.hospital.dto.DoctorDto;
 import com.springboot.hospital.model.Doctor;
+import com.springboot.hospital.model.DoctorSlot;
 import com.springboot.hospital.service.DoctorService;
 
 @RestController
@@ -42,7 +44,7 @@ public class DoctorController {
 	}
 
 	@GetMapping("/get-all")
-	public List<?> getAllCourses(@RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
+	public List<?> getAllDoctors(@RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
 			@RequestParam(name = "size", required = false, defaultValue = "1000000") Integer size) {
 		if (page == 0 && size == 1000000)
 			logger.info("No Pagination call for all courses");
@@ -87,11 +89,11 @@ public class DoctorController {
 		return ResponseEntity.ok(doctorService.getBySpecialization(specialization));
 	}
 
-	@GetMapping("/search-name/{name}")
-	public ResponseEntity<?> searchByName(@PathVariable String name) {
-		logger.info("Get doctors by thier specialization: " + name);
-		return ResponseEntity.ok(doctorService.searchByName(name));
+	@GetMapping("/specialization")
+	public ResponseEntity<?> getAllSpecializations() {
+	    return ResponseEntity.ok(doctorService.getAllSpecializations());
 	}
+
 
 	@PostMapping("/upload/profile-pic")
 	public Doctor uploadProfilePic(Principal principal, @RequestParam("file") MultipartFile file) throws IOException {
@@ -102,4 +104,11 @@ public class DoctorController {
 	public Doctor uploadProfilePic(@PathVariable int id, @RequestParam("file") MultipartFile file) throws IOException {
 		return doctorService.uploadProfilePicById(file, id);
 	}
+	
+	@GetMapping("/search/{name}")
+	public ResponseEntity<?> getByName(@PathVariable String name){
+		return ResponseEntity.status(HttpStatus.OK).body(doctorService.getDoctorByName(name));
+	}
+	
+
 }

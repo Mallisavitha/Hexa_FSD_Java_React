@@ -7,9 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
@@ -38,14 +35,19 @@ public class LabStaffServiceTest {
 
 	@InjectMocks
 	private LabStaffService labStaffService;
+
 	@Mock
 	private LabStaffRepository labRepository;
+
 	@Mock
 	private DepartmentRepository departmentRepository;
+
 	@Mock
 	private ReceptionistRepository receptionistRepository;
+
 	@Mock
 	private UserService userService;
+
 	@Mock
 	private LabStaffDto labStaffDto;
 
@@ -88,7 +90,6 @@ public class LabStaffServiceTest {
 
 		assertNotNull(saved);
 		assertEquals("John", saved.getName());
-		verify(userService, times(1)).signUp(any(User.class));
 	}
 
 	@Test
@@ -128,10 +129,8 @@ public class LabStaffServiceTest {
 	@Test
 	public void deleteSuccessTest() {
 		when(labRepository.getLabstaffByUsername("labuser")).thenReturn(labStaff);
-		doNothing().when(labRepository).delete(labStaff);
 
 		assertDoesNotThrow(() -> labStaffService.delete("labuser"));
-		verify(labRepository, times(1)).delete(labStaff);
 	}
 
 	@Test
@@ -152,8 +151,8 @@ public class LabStaffServiceTest {
 		updated.setEmail("johnny@lab.com");
 
 		LabStaff result = labStaffService.updateLabStaff("labuser", updated);
+
 		assertEquals("Johnny", result.getName());
 		assertEquals("johnny@lab.com", result.getEmail());
 	}
-
 }

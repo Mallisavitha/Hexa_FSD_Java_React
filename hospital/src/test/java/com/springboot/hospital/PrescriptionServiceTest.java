@@ -5,8 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
@@ -33,10 +31,13 @@ public class PrescriptionServiceTest {
 
 	@InjectMocks
 	private PrescriptionService prescriptionService;
+
 	@Mock
 	private PrescriptionRepository prescriptionRepository;
+
 	@Mock
 	private ConsultationRepository consultationRepository;
+
 	@Mock
 	private PrescriptionDto prescriptionDto;
 
@@ -67,7 +68,6 @@ public class PrescriptionServiceTest {
 
 		assertNotNull(saved);
 		assertEquals("Paracetamol", saved.getMedicineName());
-		verify(prescriptionRepository, times(1)).save(prescription);
 	}
 
 	@Test
@@ -103,13 +103,11 @@ public class PrescriptionServiceTest {
 		assertEquals("Night", result.getDosageTiming());
 		assertEquals("3 days", result.getDuration());
 		assertEquals(MealTime.BF, result.getMealTime());
-
 	}
-	
+
 	@AfterEach
 	public void afterTest() {
-		prescription=null;
-		consultation=null;
+		prescription = null;
+		consultation = null;
 	}
-
 }

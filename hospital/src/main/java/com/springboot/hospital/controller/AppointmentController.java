@@ -1,10 +1,14 @@
 package com.springboot.hospital.controller;
 
 import java.security.Principal;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -15,8 +19,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.springboot.hospital.dto.AppointmentDto;
 import com.springboot.hospital.model.Appointment;
 import com.springboot.hospital.service.AppointmentService;
 
@@ -27,68 +33,94 @@ public class AppointmentController {
 
 	@Autowired
 	private AppointmentService appointmentService;
-	
-	Logger logger=LoggerFactory.getLogger("AppointmentController");
 
-	//Patient book their appointment using slotId
-	@PostMapping("/book/{slotId}")
-	public ResponseEntity<?> book(@PathVariable int slotId,@RequestBody Appointment appointment,Principal principal){
-		String username=principal.getName();
-		logger.info("Patient book their appointment for slotId: "+slotId);
-		return ResponseEntity.status(HttpStatus.CREATED).body(appointmentService.bookAppointment(username,slotId,appointment));
+	Logger logger = LoggerFactory.getLogger("AppointmentController");
+
+	// Patient book their appointment using slotId
+	@PostMapping("/book/{doctorId}")
+	public ResponseEntity<?> book(@PathVariable int doctorId, @RequestBody AppointmentDto dto, Principal principal) {
+		String username = principal.getName();
+		logger.info("Patient book their appointment for slotId: " + doctorId);
+		return ResponseEntity.status(HttpStatus.CREATED)
+				.body(appointmentService.bookAppointment(username, doctorId, dto));
 	}
-	
-	//patient can view their own appointment
-	@GetMapping("/own")
-	public ResponseEntity<?> getMyAppointment(Principal principal){
-		String username=principal.getName();
-		logger.info("Patient view their own appointments");
-		return ResponseEntity.status(HttpStatus.OK).body(appointmentService.getAppointmentForPatient(username));
+
+	// patient can view their own appointment
+	@GetMapping("/own/upcoming")
+	public ResponseEntity<?> getUpcomingAppointmentsForPatient(Principal principal) {
+
+		String username = principal.getName();
+		logger.info("Patient views their upcoming/today appointments");
+
+		return ResponseEntity.status(HttpStatus.OK)
+				.body(appointmentService.getUpcomingAppointmentsForPatient(username));
 	}
-	
-	//view appointments assigned to doctor
-	@GetMapping("/doctor")
-	public ResponseEntity<?> getDoctorAppointment(Principal principal){
-		String username=principal.getName();
-		logger.info("Doctor is viewing their assigned appointments: "+username);
-		return ResponseEntity.status(HttpStatus.OK).body(appointmentService.getAppointmentForDoctor(username));
+
+	@GetMapping("/own/past")
+	public ResponseEntity<?> getPastAppointmentsForPatient(Principal principal,
+			@RequestParam(name = "page", defaultValue = "0") int page,
+			@RequestParam(name = "size", defaultValue = "10") int size) {
+
+		String username = principal.getName();
+		logger.info("Patient views their past appointments");
+
+		return ResponseEntity.status(HttpStatus.OK).body(appointmentService.getPastAppointmentsForPatient(username, page, size));
 	}
-	
-	//reschedule the appointment by doctor or receptionist
+
+	// reschedule the appointment by doctor or receptionist
 	@PutMapping("/reschedule/{id}")
-	public ResponseEntity<?> reschedule(@PathVariable int id, @RequestBody Appointment updated){
+	public ResponseEntity<?> reschedule(@PathVariable int id, @RequestBody Appointment updated) {
 		logger.info("Appointment is being rescheduled");
 		return ResponseEntity.status(HttpStatus.OK).body(appointmentService.rescheduleAppointment(id, updated));
 	}
-	
-	//get all appointments
+
+	// get all appointments
 	@GetMapping("/get-all")
-	public ResponseEntity<?> getAll(){
+	public ResponseEntity<?> getAll() {
 		logger.info("Fetching all appointments in the system");
 		return ResponseEntity.status(HttpStatus.OK).body(appointmentService.getAllAppointment());
 	}
-	
+
 	@GetMapping("/get-one/{id}")
 	public ResponseEntity<?> getOne(@PathVariable int id) {
-	    logger.info("Fetching appointment details for ID: " + id);
-	    return ResponseEntity.status(HttpStatus.OK).body(appointmentService.getById(id));
+		logger.info("Fetching appointment details for ID: " + id);
+		return ResponseEntity.status(HttpStatus.OK).body(appointmentService.getById(id));
 	}
-	
-	@GetMapping("/last/{patientId}")
-	public ResponseEntity<?> getLastAppointment(@PathVariable int patientId) {
-	    logger.info("Fetching last appointment for patient ID: " + patientId);
-	    return ResponseEntity.ok(appointmentService.getLastAppointmentByPatientId(patientId));
-	}
-	
-	@GetMapping("/doctor/last/count")
-	public ResponseEntity<?> getAppointmentCountLast7Days(Principal principal){
-		String username=principal.getName();
-		return ResponseEntity.status(HttpStatus.OK).body(appointmentService.getAppointmentCountByDate(username));
-	}
-	
+
 	@DeleteMapping("/delete/{id}")
 	public ResponseEntity<?> deleteAppointment(@PathVariable int id) {
-	    appointmentService.deleteAppointment(id);
-	    return ResponseEntity.ok().body("Appointment deleted successfully with ID: " + id);
+		appointmentService.deleteAppointment(id);
+		return ResponseEntity.ok().body("Appointment deleted successfully with ID: " + id);
 	}
+
+	@GetMapping("/last-7-days")
+	public List<Map<String, Object>> getLast7DaysAppointments() {
+		return appointmentService.getLast7DaysAppointments();
+	}
+
+	@GetMapping("/own/date")
+	public ResponseEntity<?> searchAppointmentsByDate(@RequestParam String date, Principal principal) {
+		String username = principal.getName();
+		LocalDate localDate = LocalDate.parse(date); // Format: yyyy-MM-dd
+		return ResponseEntity.ok(appointmentService.getAppointmentsByDate(username, localDate));
+	}
+
+	@GetMapping("/doctor/new")
+	public ResponseEntity<?> getTodayAppointments(Principal principal) {
+		String username = principal.getName();
+		return ResponseEntity.ok(appointmentService.getTodayAppointmentsForDoctor(username));
+	}
+
+	@GetMapping("/doctor/upcoming")
+	public ResponseEntity<?> getUpcomingAppointments(Principal principal) {
+		String username = principal.getName();
+		return ResponseEntity.ok(appointmentService.getUpcomingAppointmentsForDoctor(username));
+	}
+
+	@GetMapping("/doctor/past")
+	public ResponseEntity<?> getPastAppointments(Principal principal) {
+		String username = principal.getName();
+		return ResponseEntity.ok(appointmentService.getPastAppointmentsForDoctor(username));
+	}
+
 }

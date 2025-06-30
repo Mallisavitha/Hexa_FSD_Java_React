@@ -24,18 +24,21 @@ public class SecurityConfig {
 		http.csrf((csrf) -> csrf.disable())
 				.authorizeHttpRequests(authorize -> authorize
 						.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-						.requestMatchers("/api/patient/get-all").permitAll()
 						.requestMatchers("/api/user/signup").permitAll()
 						.requestMatchers("/api/user/token").authenticated()
 						.requestMatchers("/api/user/details").authenticated()
 						
 						//Department
 						.requestMatchers("/api/department/get-all").permitAll()
+						.requestMatchers("/api/department/delete/{id}").hasAuthority("RECEPTIONIST")
 						
 						//TestRecommendation
 						.requestMatchers("/api/test/recommend/{consultationId}").hasAuthority("DOCTOR")
 						.requestMatchers("/api/test/consultation/{consultationId}").hasAnyAuthority("DOCTOR","PATIENT")
 						.requestMatchers("/api/test/update/{testId}").hasAuthority("LABSTAFF")
+						.requestMatchers("/api/test/all").hasAuthority("LABSTAFF")
+						.requestMatchers("/api/test/upload/report/{testId}").hasAuthority("LABSTAFF")
+						.requestMatchers("/api/test/delete/report/{testId}").hasAuthority("LABSTAFF")
 						
 						//Pescription
 						.requestMatchers("/api/prescription/add/{consultationId}").hasAuthority("DOCTOR")
@@ -51,18 +54,26 @@ public class SecurityConfig {
 						.requestMatchers("/api/consultation/get-all").hasAuthority("RECEPTIONIST")
 						
 						//Appointment
-						.requestMatchers("/api/appointment/book/{slotId}").hasAuthority("PATIENT")
+						.requestMatchers("/api/appointment/book/{doctorId}").hasAuthority("PATIENT")
 						.requestMatchers("/api/appointment/own").hasAuthority("PATIENT")
-						.requestMatchers("/api/appointment/doctor").hasAuthority("DOCTOR")
+						.requestMatchers("/api/appointment/own/date").permitAll()
 						.requestMatchers("/api/appointment/reschedule/{id}").permitAll()
 						.requestMatchers("/api/appointment/get-all").hasAuthority("RECEPTIONIST")
-						.requestMatchers("/api/appointment/last/{patientId}").hasAuthority("DOCTOR")						
+						.requestMatchers("/api/appointment/last/{patientId}").hasAuthority("DOCTOR")		
+						.requestMatchers("/api/appointment/last-7-days").permitAll()
+						.requestMatchers("/api/appointment/doctor/new").hasAuthority("DOCTOR")
+						.requestMatchers("/api/appointment/doctor/upcoming").hasAuthority("DOCTOR")
+						.requestMatchers("/api/appointment/doctor/past").hasAuthority("DOCTOR")
+						.requestMatchers("/api/appointment/own/past").hasAuthority("PATIENT")
+						.requestMatchers("/api/appointment/own/upcoming").hasAuthority("PATIENT")
+						
 						//Doctor-slot
 						.requestMatchers("/api/doctor-slot/add").hasAuthority("DOCTOR")
 						.requestMatchers("/api/doctor-slot/my-slot").hasAuthority("DOCTOR")
 						.requestMatchers("/api/doctor-slot/all").permitAll()
 						.requestMatchers("api/doctor-slot/doctor-name/{name}").permitAll()
 						.requestMatchers("/api/doctor-slot/delete/{slotId}").hasAuthority("DOCTOR")
+						.requestMatchers("/api/doctor-slot/by-doctor/{doctorId}").permitAll()
 						
 						//Receptionist
 						.requestMatchers("/api/receptionist/add").permitAll()
@@ -78,7 +89,7 @@ public class SecurityConfig {
 						.requestMatchers("/api/doctor/get-all").permitAll()
 						.requestMatchers("/api/doctor/delete/{id}").hasAuthority("RECEPTIONIST")
 						.requestMatchers("/api/doctor/update").hasAuthority("DOCTOR")
-						.requestMatchers("/api/doctor/search-name/{name}").hasAnyAuthority("PATIENT","RECEPTIONIST")
+						.requestMatchers("/api/doctor/search/{name}").permitAll()
 						.requestMatchers("/api/doctor/specialization/{specialization}").hasAnyAuthority("PATIENT","RECEPTIONIST")
 						
 						//Lab-Staff

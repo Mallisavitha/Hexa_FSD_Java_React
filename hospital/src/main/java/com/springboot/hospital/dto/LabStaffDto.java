@@ -14,7 +14,17 @@ public class LabStaffDto {
 	private String name;
 	private String email;
 	private String deptName;
+	private String profilePic;
 	
+	
+	public String getProfilePic() {
+		return profilePic;
+	}
+
+	public void setProfilePic(String profilePic) {
+		this.profilePic = profilePic;
+	}
+
 	public int getLabStaffId() {
 		return labStaffId;
 	}
@@ -55,6 +65,7 @@ public class LabStaffDto {
 			dto.setName(lab.getName());
 			dto.setEmail(lab.getEmail());
 			dto.setDeptName(lab.getDepartment().getName());
+			dto.setProfilePic(lab.getProfilePic());
 			listDto.add(dto);
 		});
 		return listDto;

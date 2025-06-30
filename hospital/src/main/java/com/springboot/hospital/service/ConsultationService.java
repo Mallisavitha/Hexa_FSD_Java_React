@@ -2,6 +2,8 @@ package com.springboot.hospital.service;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.springboot.hospital.dto.ConsultationDto;
@@ -23,6 +25,8 @@ public class ConsultationService {
 	private ConsultationDto consultationDto;
 	private PatientRepository patientRepository;
 	private DoctorRepository doctorRepository;
+	
+	Logger logger=LoggerFactory.getLogger(ConsultationService.class);
 
 	public ConsultationService(ConsultationRepository consultationRepository,
 			AppointmentRepository appointmentRepository, ConsultationDto consultationDto,
@@ -43,10 +47,12 @@ public class ConsultationService {
 			throw new RuntimeException("Consultation already exists for this appointment");
 		});
 		consultation.setAppointment(appointment);
+		logger.info("Consultation saved successfully for appointmentId:{} ",appointmentId);
 		return consultationRepository.save(consultation);
 	}
 
 	public List<ConsultationDto> getAll() {
+		logger.info("Fetching all consultations");
 		List<Consultation> list = consultationRepository.findAll();
 		return consultationDto.convertConsultationIntoDto(list);
 	}
@@ -62,6 +68,7 @@ public class ConsultationService {
 			throw new ResourceNotFoundException("Doctor not authorized to view this consultation");
 		}
 
+		logger.info("Consultation fetched successfully for doctor {} ",doctorUsername);
 		return consultationDto.convertConsultationIntoDto(List.of(consultation)).get(0);
 	}
 
@@ -77,10 +84,12 @@ public class ConsultationService {
 		if (updated.getTreatmentPlan() != null)
 			consultation.setTreatmentPlan(updated.getTreatmentPlan());
 
+		logger.info("Consultation updated successfully for appointmentId: {}" ,appointmentId);
 		return consultationRepository.save(consultation);
 	}
 
 	public ConsultationDto getForPatientByAppointmentId(int appointmentId, String patientUsername) {
+		
 		Consultation consultation = consultationRepository.findByAppointmentId(appointmentId)
 				.orElseThrow(() -> new ResourceNotFoundException("Consultation not found"));
 
@@ -91,6 +100,7 @@ public class ConsultationService {
 			throw new ResourceNotFoundException("Patient not authorized to view this consultation");
 		}
 
+		logger.info("Consultation fetched successfully for patient:{} ",patientUsername);
 		return consultationDto.convertConsultationIntoDto(List.of(consultation)).get(0);
 	}
 

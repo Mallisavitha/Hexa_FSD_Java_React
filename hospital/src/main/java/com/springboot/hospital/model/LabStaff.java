@@ -18,6 +18,8 @@ public class LabStaff {
 	
 	private String name;
 	private String email;
+	private String contact;
+	private String profilePic;
 	
 	@ManyToOne
 	private Department department;
@@ -75,6 +77,23 @@ public class LabStaff {
 	public void setUser(User user) {
 		this.user = user;
 	}
+
+	public String getProfilePic() {
+		return profilePic;
+	}
+
+	public void setProfilePic(String profilePic) {
+		this.profilePic = profilePic;
+	}
+
+	public String getContact() {
+		return contact;
+	}
+
+	public void setContact(String contact) {
+		this.contact = contact;
+	}
+	
 	
 	
 	

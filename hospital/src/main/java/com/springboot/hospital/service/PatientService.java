@@ -43,14 +43,14 @@ public class PatientService {
 	}
 
 	public Patient insertPatient(Patient patient) {
-		User user = new User();
-	    user.setUsername(patient.getUser().getUsername());
-	    user.setPassword(passwordEncoder.encode(patient.getUser().getPassword()));
+		User user = patient.getUser();
 	    user.setRole("PATIENT");
 	    userRepository.save(user);
 
-	    // Set user and department
+	    // Set user
+	    user =userService.signUp(patient.getUser());
 	    patient.setUser(user);
+	    logger.info("Patient inserted");;
 
 		// Save learner in DB
 		return patientRepository.save(patient);
@@ -58,11 +58,12 @@ public class PatientService {
 
 	public List<PatientDto> getAllPatient() {
 		List<Patient> list=patientRepository.findAll();
+		logger.info("Fetching All Patients details");
 		return patientDto.convertPatientIntoDto(list);
 	}
 
 	public Patient getPatientById(int id) {
-		// TODO Auto-generated method stub
+		logger.info("Fecth patient details for this ID{} :" ,id);
 		return patientRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Patient ID Not Found " + id));
 	}
@@ -78,6 +79,7 @@ public class PatientService {
 		if (updatedPatient.getContactNumber() != null)
 			patient.setContactNumber(updatedPatient.getContactNumber());
 
+		 logger.info("Updated patient details for:{}", username);
 		return patientRepository.save(patient);
 
 	}
@@ -85,24 +87,29 @@ public class PatientService {
 	public void deletePatient(String username) {
 	    Patient patient = getPatientByUsername(username);
 	    patientRepository.delete(patient);
+	    logger.info("Deleted patient:{} ", username);
 	}
 
 
 	public Patient getPatientByUsername(String username) {
+		logger.info("Fetching patient by username:{} ", username);
 		return patientRepository.getPatientByUsername(username);
 	}
 
 	public List<PatientDto> getPatientByDoctorSpecialization(String specialization) {
+		 logger.info("Fetching patients by doctor specialization:{} ", specialization);
 		List<Patient> list=patientRepository.getPatientsBySpecialization(specialization);
 		return patientDto.convertPatientIntoDto(list);
 	}
 
 	public List<PatientDto> getPatientsByAppointment(LocalDate parseDate) {
+		logger.info("Fetching patients by appointment date:{} ", parseDate);
 		List<Patient> list=patientRepository.getPatientByAppointmentDate(parseDate);
 		return patientDto.convertPatientIntoDto(list);
 	}
 
 	public List<Patient> getPatientByName(String name) {
+		logger.info("Fetching patients by name:{} ", name);
 		return patientRepository.getPatientByName(name);
 	}
 	
@@ -192,6 +199,7 @@ public class PatientService {
 		existing.setGender(updatedPatient.getGender());
 		existing.setContactNumber(updatedPatient.getContactNumber());
 
+		logger.info("Patient updated successfully for ID: {}", id);
 		return patientRepository.save(existing);
 	}
 

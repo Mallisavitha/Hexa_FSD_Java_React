@@ -1,206 +1,176 @@
 package com.springboot.hospital;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
 import java.util.Optional;
+
+import com.springboot.hospital.dto.ConsultationDto;
+import com.springboot.hospital.exception.ResourceNotFoundException;
+import com.springboot.hospital.model.*;
+import com.springboot.hospital.repository.*;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
 
-import com.springboot.hospital.dto.ConsultationDto;
-import com.springboot.hospital.exception.ResourceNotFoundException;
-import com.springboot.hospital.model.Appointment;
-import com.springboot.hospital.model.Consultation;
-import com.springboot.hospital.model.Doctor;
-import com.springboot.hospital.model.Patient;
-import com.springboot.hospital.repository.AppointmentRepository;
-import com.springboot.hospital.repository.ConsultationRepository;
-import com.springboot.hospital.repository.DoctorRepository;
-import com.springboot.hospital.repository.PatientRepository;
-import com.springboot.hospital.service.ConsultationService;
+import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 public class ConsultationServiceTest {
 
-	@InjectMocks
-	private ConsultationService consultationService;
-	@Mock
-	private ConsultationRepository consultationRepository;
-	@Mock
-	private AppointmentRepository appointmentRepository;
-	@Mock
-	private ConsultationDto consultationDto;
-	@Mock
-	private PatientRepository patientRepository;
-	@Mock
-	private DoctorRepository doctorRepository;
+    @InjectMocks
+    private com.springboot.hospital.service.ConsultationService consultationService;
 
-	private Appointment appointment;
-	private Consultation consultation;
-	private Doctor doctor;
-	private Patient patient;
+    @Mock
+    private ConsultationRepository consultationRepository;
 
-	@BeforeEach
-	public void init() {
-		doctor = new Doctor();
-		doctor.setDoctorId(1);
-		doctor.setFullName("Smith");
+    @Mock
+    private AppointmentRepository appointmentRepository;
 
-		patient = new Patient();
-		patient.setPatientId(2);
-		patient.setFullName("John");
+    @Mock
+    private ConsultationDto consultationDto;
 
-		appointment = new Appointment();
-		appointment.setAppointmentId(10);
-		appointment.setDoctor(doctor);
-		appointment.setPatient(patient);
+    @Mock
+    private PatientRepository patientRepository;
 
-		consultation = new Consultation();
-		consultation.setConsultationId(20);
-		consultation.setSymptoms("Fever");
-		consultation.setExamination("Normal");
-		consultation.setTreatmentPlan("Paracetamol");
-		consultation.setAppointment(appointment);
+    @Mock
+    private DoctorRepository doctorRepository;
 
-		System.out.println("Test data initialized.");
-	}
+    private Appointment appointment;
+    private Consultation consultation;
+    private Doctor doctor;
+    private Patient patient;
 
-	@Test
-	public void addConsultationSuccessTest() {
-		when(appointmentRepository.findById(10)).thenReturn(Optional.of(appointment));
-		when(consultationRepository.findByAppointmentId(10)).thenReturn(Optional.empty());
-		when(consultationRepository.save(any(Consultation.class))).thenReturn(consultation);
+    @BeforeEach
+    public void setUp() {
+        doctor = new Doctor();
+        doctor.setDoctorId(1);
+        doctor.setFullName("Dr. Smith");
 
-		Consultation result = consultationService.addConsultation(10, new Consultation());
+        patient = new Patient();
+        patient.setPatientId(10);
+        patient.setFullName("Jane");
 
-		assertNotNull(result);
-		verify(consultationRepository, times(1)).save(any(Consultation.class));
-	}
+        appointment = new Appointment();
+        appointment.setAppointmentId(100);
+        appointment.setDoctor(doctor);
+        appointment.setPatient(patient);
 
-	@Test
-	public void addConsultationExistsTest() {
-		when(appointmentRepository.findById(10)).thenReturn(Optional.of(appointment));
-		when(consultationRepository.findByAppointmentId(10)).thenReturn(Optional.of(consultation));
+        consultation = new Consultation();
+        consultation.setConsultationId(1);
+        consultation.setAppointment(appointment);
+        consultation.setSymptoms("Cough");
+        consultation.setExamination("Normal");
+        consultation.setTreatmentPlan("Rest");
 
-		RuntimeException ex = assertThrows(RuntimeException.class, () -> {
-			consultationService.addConsultation(10, new Consultation());
-		});
-		assertEquals("Consultation already exists for this appointment", ex.getMessage());
-	}
+        System.out.println("Test data initialized.");
+    }
 
-	@Test
-	public void getAllConsultationTest() {
-		List<Consultation> list = List.of(consultation);
-		List<ConsultationDto> dtoList = List.of(new ConsultationDto());
+    @Test
+    public void testAddConsultation_Success() {
+        when(appointmentRepository.findById(100)).thenReturn(Optional.of(appointment));
+        when(consultationRepository.findByAppointmentId(100)).thenReturn(Optional.empty());
+        when(consultationRepository.save(consultation)).thenReturn(consultation);
 
-		when(consultationRepository.findAll()).thenReturn(list);
-		when(consultationDto.convertConsultationIntoDto(list)).thenReturn(dtoList);
+        Consultation result = consultationService.addConsultation(100, consultation);
 
-		List<ConsultationDto> result = consultationService.getAll();
+        assertNotNull(result);
+        assertEquals("Cough", result.getSymptoms());
+    }
 
-		assertEquals(1, result.size());
-	}
+    @Test
+    public void testAddConsultation_AlreadyExists() {
+        when(appointmentRepository.findById(100)).thenReturn(Optional.of(appointment));
+        when(consultationRepository.findByAppointmentId(100)).thenReturn(Optional.of(consultation));
 
-	@Test
-	public void getForDoctorByAppointmentIdSuccessTest() {
-		when(consultationRepository.findByAppointmentId(10)).thenReturn(Optional.of(consultation));
-		when(doctorRepository.getDoctorByUsername("drsmith")).thenReturn(doctor);
-		when(consultationDto.convertConsultationIntoDto(List.of(consultation)))
-				.thenReturn(List.of(new ConsultationDto()));
+        assertThrows(RuntimeException.class, () -> {
+            consultationService.addConsultation(100, consultation);
+        });
+    }
 
-		ConsultationDto result = consultationService.getForDoctorByAppointmentId(10, "drsmith");
+    @Test
+    public void testUpdateConsultation_Success() {
+        Consultation updated = new Consultation();
+        updated.setSymptoms("Fever");
+        updated.setExamination("Severe");
+        updated.setTreatmentPlan("Antibiotics");
 
-		assertNotNull(result);
-	}
+        when(consultationRepository.findById(100)).thenReturn(Optional.of(consultation));
+        when(consultationRepository.save(consultation)).thenReturn(consultation);
 
-	@Test
-	public void getForDoctorByAppointmentIdUnathorizesTest() {
-		Doctor anotherDoctor = new Doctor();
-		anotherDoctor.setDoctorId(99);
+        Consultation result = consultationService.updateConsultation(100, updated);
 
-		when(consultationRepository.findByAppointmentId(10)).thenReturn(Optional.of(consultation));
-		when(doctorRepository.getDoctorByUsername("otherdoc")).thenReturn(anotherDoctor);
+        assertEquals("Fever", result.getSymptoms());
+        assertEquals("Severe", result.getExamination());
+    }
 
-		ResourceNotFoundException ex = assertThrows(ResourceNotFoundException.class, () -> {
-			consultationService.getForDoctorByAppointmentId(10, "otherdoc");
-		});
+    @Test
+    public void testUpdateConsultation_NotFound() {
+        when(consultationRepository.findById(999)).thenReturn(Optional.empty());
 
-		assertEquals("Doctor not authorized to view this consultation", ex.getMessage());
-	}
+        ResourceNotFoundException ex = assertThrows(ResourceNotFoundException.class, () -> {
+            consultationService.updateConsultation(999, new Consultation());
+        });
 
-	@Test
-	public void updateConsultationSuccessTest() {
-		Consultation updated = new Consultation();
-		updated.setSymptoms("Cold");
-		updated.setExamination("Mild");
-		updated.setTreatmentPlan("Rest");
+        assertEquals("Consultation not found", ex.getMessage());
+    }
 
-		when(consultationRepository.findById(10)).thenReturn(Optional.of(consultation));
-		when(consultationRepository.save(any(Consultation.class))).thenReturn(consultation);
+    @Test
+    public void testGetForDoctorByAppointmentId_Valid() {
+        when(consultationRepository.findByAppointmentId(100)).thenReturn(Optional.of(consultation));
+        when(doctorRepository.getDoctorByUsername("drsmith")).thenReturn(doctor);
+        when(consultationDto.convertConsultationIntoDto(List.of(consultation))).thenReturn(List.of(new ConsultationDto()));
 
-		Consultation result = consultationService.updateConsultation(10, updated);
+        ConsultationDto result = consultationService.getForDoctorByAppointmentId(100, "drsmith");
+        assertNotNull(result);
+    }
 
-		assertEquals("Cold", result.getSymptoms());
-		assertEquals("Mild", result.getExamination());
-		assertEquals("Rest", result.getTreatmentPlan());
-	}
+    @Test
+    public void testGetForDoctorByAppointmentId_NotAuthorized() {
+        Doctor otherDoctor = new Doctor();
+        otherDoctor.setDoctorId(2);
 
-	@Test
-	public void updateConsultationNotFoundTest() {
-		when(consultationRepository.findById(99)).thenReturn(Optional.empty());
+        when(consultationRepository.findByAppointmentId(100)).thenReturn(Optional.of(consultation));
+        when(doctorRepository.getDoctorByUsername("wrongdoc")).thenReturn(otherDoctor);
 
-		ResourceNotFoundException ex = assertThrows(ResourceNotFoundException.class, () -> {
-			consultationService.updateConsultation(99, new Consultation());
-		});
-		assertEquals("Consultation not found", ex.getMessage());
+        assertThrows(ResourceNotFoundException.class, () -> {
+            consultationService.getForDoctorByAppointmentId(100, "wrongdoc");
+        });
+    }
 
-	}
+    @Test
+    public void testGetForPatientByAppointmentId_Valid() {
+        when(consultationRepository.findByAppointmentId(100)).thenReturn(Optional.of(consultation));
+        when(patientRepository.getPatientByUsername("jane")).thenReturn(patient);
+        when(consultationDto.convertConsultationIntoDto(List.of(consultation))).thenReturn(List.of(new ConsultationDto()));
 
-	@Test
-	public void getByAppointmentIdSuccessTest() {
-		when(consultationRepository.findByAppointmentId(10)).thenReturn(Optional.of(consultation));
-		when(patientRepository.getPatientByUsername("johndoe")).thenReturn(patient);
-		when(consultationDto.convertConsultationIntoDto(List.of(consultation)))
-				.thenReturn(List.of(new ConsultationDto()));
+        ConsultationDto result = consultationService.getForPatientByAppointmentId(100, "jane");
+        assertNotNull(result);
+    }
 
-		ConsultationDto result = consultationService.getForPatientByAppointmentId(10, "johndoe");
+    @Test
+    public void testGetForPatientByAppointmentId_NotAuthorized() {
+        Patient anotherPatient = new Patient();
+        anotherPatient.setPatientId(20);
 
-		assertNotNull(result);
-	}
+        when(consultationRepository.findByAppointmentId(100)).thenReturn(Optional.of(consultation));
+        when(patientRepository.getPatientByUsername("otherpatient")).thenReturn(anotherPatient);
 
-	@Test
-	public void getByAppointmentIdUnauthorizedTest() {
-		Patient anotherPatient = new Patient();
-		anotherPatient.setPatientId(999);
+        assertThrows(ResourceNotFoundException.class, () -> {
+            consultationService.getForPatientByAppointmentId(100, "otherpatient");
+        });
+    }
 
-		when(consultationRepository.findByAppointmentId(10)).thenReturn(Optional.of(consultation));
-		when(patientRepository.getPatientByUsername("another")).thenReturn(anotherPatient);
-
-		ResourceNotFoundException ex = assertThrows(ResourceNotFoundException.class, () -> {
-			consultationService.getForPatientByAppointmentId(10, "another");
-		});
-
-		assertEquals("Patient not authorized to view this consultation", ex.getMessage());
-	}
-	
-	@AfterEach
-	public void afterTest() {
-		consultation=null;
-		appointment=null;
-		doctor=null;
-		patient=null;
-		System.out.println("Test data cleared.");
-	}
-
+    @AfterEach
+    public void tearDown() {
+        consultation = null;
+        appointment = null;
+        doctor = null;
+        patient = null;
+        System.out.println("Test data cleared.");
+    }
 }

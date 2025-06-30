@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDate;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,10 +22,12 @@ import com.springboot.hospital.dto.DoctorDto;
 import com.springboot.hospital.exception.ResourceNotFoundException;
 import com.springboot.hospital.model.Department;
 import com.springboot.hospital.model.Doctor;
+import com.springboot.hospital.model.DoctorSlot;
 import com.springboot.hospital.model.Receptionist;
 import com.springboot.hospital.model.User;
 import com.springboot.hospital.repository.DepartmentRepository;
 import com.springboot.hospital.repository.DoctorRepository;
+import com.springboot.hospital.repository.DoctorSlotRepository;
 import com.springboot.hospital.repository.ReceptionistRepository;
 import com.springboot.hospital.repository.UserRepository;
 
@@ -36,19 +39,22 @@ public class DoctorService {
 	private DepartmentRepository deptRepository;
 	private ReceptionistRepository receptionistRepository;
 	private UserRepository userRepository;
+	private DoctorSlotRepository doctorSlotRepository;
 	private UserService userService;
 	private DoctorDto doctorDto;
 	Logger logger = LoggerFactory.getLogger(DoctorService.class);
 
 	public DoctorService(PasswordEncoder passwordEncoder, DoctorRepository doctorRepository,
 			DepartmentRepository deptRepository, ReceptionistRepository receptionistRepository,
-			UserRepository userRepository, UserService userService, DoctorDto doctorDto) {
+			UserRepository userRepository, DoctorSlotRepository doctorSlotRepository, UserService userService,
+			DoctorDto doctorDto) {
 		super();
 		this.passwordEncoder = passwordEncoder;
 		this.doctorRepository = doctorRepository;
 		this.deptRepository = deptRepository;
 		this.receptionistRepository = receptionistRepository;
 		this.userRepository = userRepository;
+		this.doctorSlotRepository = doctorSlotRepository;
 		this.userService = userService;
 		this.doctorDto = doctorDto;
 	}
@@ -57,20 +63,21 @@ public class DoctorService {
 	    Department dept = deptRepository.findById(deptId)
 	            .orElseThrow(() -> new RuntimeException("Department not found with ID: " + deptId));
 	 // Create new user and associate
-	    User user = new User();
-	    user.setUsername(doctor.getUser().getUsername());
-	    user.setPassword(passwordEncoder.encode(doctor.getUser().getPassword()));
+	    User user = doctor.getUser();
 	    user.setRole("DOCTOR");
-	    userRepository.save(user);
+	    user =userService.signUp(doctor.getUser());
+
 
 	    // Set user and department
 	    doctor.setUser(user);
 	    doctor.setDepartment(dept);
 	    doctor.setAddedBy(addedBy); // if you're tracking this
+	    logger.info("doctor is being saved to the database:{} ",doctor.getFullName());
 	    return doctorRepository.save(doctor);
 	}
 
 	public List<?> getAllDoctors(int page, int size) {
+		logger.info("Fetching all Doctors - page: {},size: {}",page,size);
 		// Activate Pageable interface
 		Pageable pageable = PageRequest.of(page, size);
 		List<Doctor> list = doctorRepository.findAll(pageable).getContent();
@@ -78,8 +85,9 @@ public class DoctorService {
 	}
 
 	public Doctor getDoctorById(int id) {
+		logger.info("Fetching doctor by ID: ",id);
 		return doctorRepository.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException("Invalid Doctor ID: " + id));
+				.orElseThrow(() -> new ResourceNotFoundException("Invalid Doctor ID: {}" + id));
 	}
 
 	public Doctor updateDoctor(String username, Doctor updatedDoctor) {
@@ -96,26 +104,26 @@ public class DoctorService {
 			dbDoctor.setDesignation(updatedDoctor.getDesignation());
 		if (updatedDoctor.getContact() != null)
 			dbDoctor.setContact(updatedDoctor.getContact());
+		
+		logger.info("Doctor updated successfully for username: {}",username);
 		return doctorRepository.save(dbDoctor);
 	}
 
 	public void deleteDoctor(String username) {
+		logger.info("Deleting doctor with username: {}",username);
 		Doctor doctor = getDoctorByUsername(username);
 		doctorRepository.delete(doctor);
 	}
 
 	public List<DoctorDto> getBySpecialization(String specialization) {
+		logger.info("Fetching dotos by specializaton: {}",specialization);
 		List<Doctor> list = doctorRepository.getBySpecialization(specialization);
 		return doctorDto.convertDoctorIntoDto(list);
 	}
 
 	public Doctor getDoctorByUsername(String username) {
+		logger.info("Get doctot details by username: {}",username);
 		return doctorRepository.getDoctorByUsername(username);
-	}
-
-	public List<DoctorDto> searchByName(String name) {
-		List<Doctor> list = doctorRepository.searchByName(name);
-		return doctorDto.convertDoctorIntoDto(list);
 	}
 
 	public Doctor uploadProfilePic(MultipartFile file, String username) throws IOException {
@@ -169,6 +177,7 @@ public class DoctorService {
 		existing.setDesignation(updatedDoctor.getDesignation());
 		existing.setContact(updatedDoctor.getContact());
 
+		logger.info("Doctor updated successfully with ID: {}",id);
 		return doctorRepository.save(existing);
 	}
 
@@ -212,7 +221,20 @@ public class DoctorService {
 	public void deleteDoctorById(int id) {
 		Optional<Doctor> doctor=doctorRepository.findById(id);
 		doctorRepository.deleteById(id);
+		logger.info("doctor deleted successfully with Id: {}",id);
 		
 	}
+
+	public List<Doctor> getDoctorByName(String name) {
+		logger.info("Fetching doctors by name: {}",name);
+		return doctorRepository.getDoctorByName(name);
+	}
+
+	public List<String> getAllSpecializations() {
+		logger.info("Fetching all distinct doctor speicalization");
+	    return doctorRepository.findAllDistinctSpecializations();
+	}
+
+
 
 }
