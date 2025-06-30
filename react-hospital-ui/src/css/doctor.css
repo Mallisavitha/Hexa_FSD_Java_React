@@ -1,0 +1,239 @@
+
+aside {
+    color: #f6f3f3;
+    width: 250px;
+    padding-left: 20px;
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: 600;
+    font-size: medium;
+    font-style: inherit;
+    height: 100vh;
+    background-image: linear-gradient(30deg, #0048bd, #44a7fd);
+    border-top-right-radius: 80px;
+    
+}
+
+aside a {
+    font-size: 12px;
+    display: block;
+    padding: 12px;
+    padding-left: 30px;
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+aside a:hover {
+    color: #3f5efb;
+    outline: none;
+    position: relative;
+    background-color: #fff;
+    border-top-left-radius: 20px;
+    border-bottom-left-radius: 20px;
+}
+
+aside a i {
+    margin-right: 5px;
+    color: #e6ffe6;
+}
+
+
+aside a:hover::after {
+    content: "";
+    position: absolute;
+    background-color: transparent;
+    bottom: 100%;
+    right: 0;
+    height: 35px;
+    width: 35px;
+    border-bottom-right-radius: 18px;
+    box-shadow: 0 20px 0 0 #fff;
+}
+
+aside a:hover::before {
+    content: "";
+    position: absolute;
+    background-color: transparent;
+    top: 38px;
+    right: 0;
+    height: 35px;
+    width: 35px;
+    border-top-right-radius: 18px;
+    box-shadow: 0 -20px 0 0 #fff;
+}
+
+aside p {
+    margin: 0;
+    padding: 40px 0;
+}
+
+/* Override Bootstrap or default nav-link styling */
+
+.sidebar {
+    position: fixed; /* Make it stay in place */
+    top: 0;
+    left: 0;
+    width: 250px;
+    height: 100vh;
+    background-image: linear-gradient(30deg, #0048bd, #44a7fd);
+    padding-left: 20px;
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: 600;
+    font-size: medium;
+    font-style: inherit;
+    border-top-right-radius: 80px;
+    z-index: 999; /* Keep it on top */
+    overflow-y: auto; /* If content grows, allow scroll */
+}
+
+.sidebar .nav-link {
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #fff !important;       /* Force white text */
+    text-decoration: none;
+    font-size: 16px;
+    padding: 12px 30px;
+    display: block;
+    transition: background 0.3s;
+}
+
+.sidebar .nav-link:hover {
+    background-color: #fff;
+    color: #3f5efb !important;
+    border-top-left-radius: 20px;
+    border-bottom-left-radius: 20px;
+}
+
+.sidebar .nav-link i:hover {
+    margin-right: 8px;
+    background-color: #fff;
+    color: #3f5efb !important;
+}
+
+.sidebar .sidebar-header{
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 18px;
+    margin-left: 10%;
+    font-weight: 700;
+}
+
+body {
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 0;
+    margin: 0;
+    background-image: url('/public/img/bg.jpg');
+}
+
+.main-content {
+    margin-left: 250px;
+    padding: 20px;
+    margin-top:1px;
+    margin-bottom:110px;
+}
+
+/* Custom active page button background and text color */
+.p-paginator .p-paginator-page.p-highlight {
+    background-color:transparent !important;  /* Change to your desired color */
+    color: black !important;               /* Change text color if needed */
+    border-color:rgb(18, 18, 19) !important;
+}
+
+.social {
+    height: 0;
+}
+
+.social i:before {
+    width: 14px;
+    height: 14px;
+    font-size: 14px;
+    position: fixed;
+    color: #fff;
+    background: #0077B5;
+    padding: 10px;
+    border-radius: 50%;
+    top: 5px;
+    right: 5px;
+}
+.navbar-header {
+    position: fixed;
+    top: 1rem;
+    left: 55rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    z-index: 1000;
+    font-family: 'Open Sans', sans-serif;
+}
+
+.navbar-welcome {
+    font-weight: 500;
+    color: #2c3e50;
+}
+
+.navbar-logout {
+    padding: 0.5rem 1rem;
+    border: 2px solid rgb(12, 120, 253);
+    background-color: white;
+    color: rgb(12, 120, 253);
+    border-radius: 6px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.navbar-logout:hover {
+    background-color: #e6ffe6;
+    color: rgb(12, 120, 253);
+}
+
+
+.form-body{
+    overflow: hidden;
+    z-index: 1;
+    background:url('/public/img/bg.jpg'); /* fallback */
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(10px); /* for Safari */
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    color: #1c1b1b;
+    justify-content: center; /* Center horizontally */
+    align-items: center;  
+    height: 55vh;
+
+}
+
+.slim-card {
+    padding: 0.5rem;
+    border-radius: 6px;
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.08);
+    font-size: 0.70rem;
+    max-height: 10%;
+}
+
+/* Apply smaller font and tighter row padding */
+.p-datatable .p-datatable-tbody > tr > td {
+    padding: 0.4rem 0.6rem;
+}
+
+.p-datatable .p-column-header-content {
+    font-size: 0.85rem;
+}
+
+.p-datatable .p-paginator {
+    padding: 0.3rem;
+    font-size: 0.8rem;
+}
+
+
+/* Customize the close (x) button in PrimeReact Dialog */
+.p-dialog .p-dialog-header .p-dialog-header-icon {
+    background-color: transparent !important; /* remove black background */
+   
+    border-radius: 50%; /* optional */
+    border: none;
+}
+
+.p-dialog .p-dialog-header .p-dialog-header-icon:hover {
+    background-color: transparent !important;
+}
+
+
+
+
